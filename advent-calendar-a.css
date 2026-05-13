@@ -1140,7 +1140,11 @@ body.user-coupon-open .container {
    Для удаления — убрать весь этот блок + связанный JS + шрифт Bangers
    ==================================================================== */
 
-/* Шрифты: заменяем Cormorant на Bangers, Nunito на системный жирный */
+/* Шрифты: всё на Bangers, body текст на системный sans-serif */
+body.theme-pickle {
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
 body.theme-pickle h1,
 body.theme-pickle .coupon-card h3,
 body.theme-pickle .info-card h3,
@@ -1174,6 +1178,31 @@ body.theme-pickle .day-label {
 }
 
 body.theme-pickle .reward-title {
+    font-family: 'Bangers', cursive;
+    letter-spacing: 1px;
+}
+
+body.theme-pickle .reward-desc,
+body.theme-pickle .instructions p,
+body.theme-pickle .coupon-card p,
+body.theme-pickle .coupon-card .coupon-desc,
+body.theme-pickle .info-row,
+body.theme-pickle .user-coupon-desc {
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+body.theme-pickle .day-marker {
+    font-family: 'Bangers', cursive;
+    letter-spacing: 3px;
+}
+
+body.theme-pickle .progress-counter,
+body.theme-pickle .user-coupons-btn,
+body.theme-pickle .debug-menu-btn,
+body.theme-pickle .info-label,
+body.theme-pickle .user-coupon-title,
+body.theme-pickle .user-coupon-name,
+body.theme-pickle .coupon-card .coupon-title {
     font-family: 'Bangers', cursive;
     letter-spacing: 1px;
 }
