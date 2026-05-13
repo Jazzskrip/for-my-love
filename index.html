@@ -33,6 +33,17 @@
                     <div class="progress-counter user-progress" id="progressCounter">Открыто 0/13</div>
                 </div>
                 <button class="user-coupons-btn" id="userCouponsBtn" type="button">Купоны</button>
+                <!-- DEBUG MENU: кнопка + нативный select для дебаг-действий -->
+                <div class="debug-menu-wrap">
+                    <button class="debug-menu-btn" id="debugMenuBtn" type="button" aria-label="Debug menu">&#9660;</button>
+                    <select class="debug-menu-select" id="debugMenuSelect">
+                        <option value="" disabled selected>Палитра...</option>
+                        <option value="rose">Розовая</option>
+                        <option value="lavender">Лавандовая</option>
+                        <option value="mint">Мятная</option>
+                    </select>
+                </div>
+                <!-- /DEBUG MENU -->
             </div>
             <h1 id="pageTitle">Адвент-календарь</h1>
             <p class="subtitle" id="pageSubtitle">13 дней общения для вас</p>
@@ -513,7 +524,211 @@
             }
         }
 
-        loadTheme().catch(() => {});
+        /* ===== DEBUG MENU: палитры и переключение ===== */
+
+        // Три палитры. Каждая — полный набор CSS-переменных.
+        // Чтобы удалить дебаг-меню потом, убери этот блок + HTML debug-menu-wrap + CSS debug-menu-*.
+        const DEBUG_PALETTES = {
+            // Палитра 1: Розовая (белый фон, нежно-розовые акценты)
+            rose: {
+                '--bg-gradient': 'linear-gradient(135deg, #fff9fb 0%, #ffeef3 55%, #fff5f7 100%)',
+                '--bg-spots': 'radial-gradient(ellipse at 25% 20%, rgba(255, 200, 210, 0.35) 0%, transparent 55%), radial-gradient(ellipse at 80% 75%, rgba(255, 220, 230, 0.35) 0%, transparent 55%), radial-gradient(ellipse at 50% 45%, rgba(255, 235, 240, 0.35) 0%, transparent 70%)',
+                '--text-main': '#3a2a2f',
+                '--title-gradient': 'linear-gradient(135deg, #c47085 0%, #c47085 100%)',
+                '--subtitle-color': 'rgba(140, 70, 90, 0.8)',
+                '--progress-color': 'rgba(140, 70, 90, 0.75)',
+                '--panel-bg': 'rgba(255, 255, 255, 0.78)',
+                '--panel-border': 'rgba(220, 150, 170, 0.5)',
+                '--panel-shadow': '0 15px 50px rgba(220, 150, 170, 0.18), 0 0 30px rgba(255, 200, 220, 0.12)',
+                '--panel-name': '#c47085',
+                '--panel-text': 'rgba(140, 70, 90, 0.75)',
+                '--fab-border': 'rgba(220, 150, 170, 0.5)',
+                '--fab-bg': 'rgba(255, 255, 255, 0.9)',
+                '--fab-color': '#c47085',
+                '--fab-shadow': '0 15px 50px rgba(220, 150, 170, 0.18), 0 0 30px rgba(255, 200, 220, 0.12)',
+                '--info-overlay-bg': 'rgba(10, 10, 20, 0.6)',
+                '--info-card-bg': 'rgba(255, 255, 255, 0.92)',
+                '--info-card-border': 'rgba(220, 150, 170, 0.4)',
+                '--info-card-shadow': '0 24px 70px rgba(0, 0, 0, 0.25)',
+                '--info-title': '#c47085',
+                '--info-label': '#c47085',
+                '--info-row': 'rgba(140, 70, 90, 0.75)',
+                '--info-close-border': 'rgba(220, 150, 170, 0.5)',
+                '--info-close-bg': 'rgba(255, 255, 255, 0.9)',
+                '--info-close-color': '#c47085',
+                '--card-front-bg': 'linear-gradient(145deg, rgba(255, 255, 255, 0.75) 0%, rgba(255, 240, 245, 0.75) 60%, rgba(255, 230, 238, 0.7) 100%)',
+                '--card-front-border': 'rgba(220, 150, 170, 0.35)',
+                '--card-front-shadow': '0 12px 35px rgba(140, 70, 90, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.6)',
+                '--card-front-hover-border': 'rgba(220, 150, 170, 0.6)',
+                '--card-front-hover-shadow': '0 15px 50px rgba(220, 150, 170, 0.2), 0 0 30px rgba(255, 200, 220, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
+                '--card-back-bg': 'linear-gradient(145deg, rgba(255, 255, 255, 0.75) 0%, rgba(255, 240, 245, 0.75) 60%, rgba(255, 230, 238, 0.7) 100%)',
+                '--card-back-border': 'rgba(220, 150, 170, 0.4)',
+                '--card-back-shadow': '0 12px 35px rgba(140, 70, 90, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.6)',
+                '--day-number-gradient': 'linear-gradient(180deg, #c47085 0%, #d4899b 100%)',
+                '--day-label-color': 'rgba(140, 70, 90, 0.6)',
+                '--reward-title': '#c47085',
+                '--reward-desc': 'rgba(140, 70, 90, 0.75)',
+                '--coupon-badge-bg': 'linear-gradient(135deg, #f2b5c6, #e896ab)',
+                '--instructions-bg': 'rgba(255, 240, 245, 0.75)',
+                '--instructions-border': 'rgba(220, 150, 170, 0.3)',
+                '--instructions-text': 'rgba(140, 70, 90, 0.8)',
+                '--coupon-overlay-bg': 'rgba(10, 10, 20, 0.75)',
+                '--coupon-card-bg': 'linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 240, 245, 0.92) 100%)',
+                '--coupon-card-border': 'rgba(220, 150, 170, 0.6)',
+                '--coupon-card-shadow': '0 15px 50px rgba(220, 150, 170, 0.18), 0 0 30px rgba(255, 200, 220, 0.12)',
+                '--coupon-title': '#c47085',
+                '--coupon-text': 'rgba(140, 70, 90, 0.85)',
+                '--coupon-text-font': "'Nunito', sans-serif",
+                '--coupon-title-secondary': 'rgba(140, 70, 90, 0.85)',
+                '--locked-label': 'rgba(140, 70, 90, 0.8)',
+                '--locked-label-bg': 'rgba(0, 0, 0, 0.15)'
+            },
+
+            // Палитра 2: Лавандовая (светло-лавандовый фон, фиолетовые акценты)
+            lavender: {
+                '--bg-gradient': 'linear-gradient(135deg, #faf8ff 0%, #f0eaff 55%, #f5f2ff 100%)',
+                '--bg-spots': 'radial-gradient(ellipse at 25% 20%, rgba(200, 180, 255, 0.35) 0%, transparent 55%), radial-gradient(ellipse at 80% 75%, rgba(220, 200, 255, 0.35) 0%, transparent 55%), radial-gradient(ellipse at 50% 45%, rgba(235, 225, 255, 0.35) 0%, transparent 70%)',
+                '--text-main': '#2e2a3a',
+                '--title-gradient': 'linear-gradient(135deg, #8b6bae 0%, #8b6bae 100%)',
+                '--subtitle-color': 'rgba(90, 60, 120, 0.8)',
+                '--progress-color': 'rgba(90, 60, 120, 0.75)',
+                '--panel-bg': 'rgba(255, 255, 255, 0.78)',
+                '--panel-border': 'rgba(170, 140, 210, 0.5)',
+                '--panel-shadow': '0 15px 50px rgba(170, 140, 210, 0.18), 0 0 30px rgba(200, 180, 255, 0.12)',
+                '--panel-name': '#8b6bae',
+                '--panel-text': 'rgba(90, 60, 120, 0.75)',
+                '--fab-border': 'rgba(170, 140, 210, 0.5)',
+                '--fab-bg': 'rgba(255, 255, 255, 0.9)',
+                '--fab-color': '#8b6bae',
+                '--fab-shadow': '0 15px 50px rgba(170, 140, 210, 0.18), 0 0 30px rgba(200, 180, 255, 0.12)',
+                '--info-overlay-bg': 'rgba(10, 10, 20, 0.6)',
+                '--info-card-bg': 'rgba(255, 255, 255, 0.92)',
+                '--info-card-border': 'rgba(170, 140, 210, 0.4)',
+                '--info-card-shadow': '0 24px 70px rgba(0, 0, 0, 0.25)',
+                '--info-title': '#8b6bae',
+                '--info-label': '#8b6bae',
+                '--info-row': 'rgba(90, 60, 120, 0.75)',
+                '--info-close-border': 'rgba(170, 140, 210, 0.5)',
+                '--info-close-bg': 'rgba(255, 255, 255, 0.9)',
+                '--info-close-color': '#8b6bae',
+                '--card-front-bg': 'linear-gradient(145deg, rgba(255, 255, 255, 0.75) 0%, rgba(245, 240, 255, 0.75) 60%, rgba(235, 225, 255, 0.7) 100%)',
+                '--card-front-border': 'rgba(170, 140, 210, 0.35)',
+                '--card-front-shadow': '0 12px 35px rgba(90, 60, 120, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.6)',
+                '--card-front-hover-border': 'rgba(170, 140, 210, 0.6)',
+                '--card-front-hover-shadow': '0 15px 50px rgba(170, 140, 210, 0.2), 0 0 30px rgba(200, 180, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
+                '--card-back-bg': 'linear-gradient(145deg, rgba(255, 255, 255, 0.75) 0%, rgba(245, 240, 255, 0.75) 60%, rgba(235, 225, 255, 0.7) 100%)',
+                '--card-back-border': 'rgba(170, 140, 210, 0.4)',
+                '--card-back-shadow': '0 12px 35px rgba(90, 60, 120, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.6)',
+                '--day-number-gradient': 'linear-gradient(180deg, #8b6bae 0%, #a688c4 100%)',
+                '--day-label-color': 'rgba(90, 60, 120, 0.6)',
+                '--reward-title': '#8b6bae',
+                '--reward-desc': 'rgba(90, 60, 120, 0.75)',
+                '--coupon-badge-bg': 'linear-gradient(135deg, #c4b0e0, #a688c4)',
+                '--instructions-bg': 'rgba(245, 240, 255, 0.75)',
+                '--instructions-border': 'rgba(170, 140, 210, 0.3)',
+                '--instructions-text': 'rgba(90, 60, 120, 0.8)',
+                '--coupon-overlay-bg': 'rgba(10, 10, 20, 0.75)',
+                '--coupon-card-bg': 'linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(245, 240, 255, 0.92) 100%)',
+                '--coupon-card-border': 'rgba(170, 140, 210, 0.6)',
+                '--coupon-card-shadow': '0 15px 50px rgba(170, 140, 210, 0.18), 0 0 30px rgba(200, 180, 255, 0.12)',
+                '--coupon-title': '#8b6bae',
+                '--coupon-text': 'rgba(90, 60, 120, 0.85)',
+                '--coupon-text-font': "'Nunito', sans-serif",
+                '--coupon-title-secondary': 'rgba(90, 60, 120, 0.85)',
+                '--locked-label': 'rgba(90, 60, 120, 0.8)',
+                '--locked-label-bg': 'rgba(0, 0, 0, 0.15)'
+            },
+
+            // Палитра 3: Мятная (светло-мятный фон, бирюзово-зеленые акценты)
+            mint: {
+                '--bg-gradient': 'linear-gradient(135deg, #f7fffd 0%, #e8faf5 55%, #f2fdf9 100%)',
+                '--bg-spots': 'radial-gradient(ellipse at 25% 20%, rgba(170, 230, 210, 0.35) 0%, transparent 55%), radial-gradient(ellipse at 80% 75%, rgba(190, 240, 225, 0.35) 0%, transparent 55%), radial-gradient(ellipse at 50% 45%, rgba(210, 245, 235, 0.35) 0%, transparent 70%)',
+                '--text-main': '#2a3a35',
+                '--title-gradient': 'linear-gradient(135deg, #5a9e8f 0%, #5a9e8f 100%)',
+                '--subtitle-color': 'rgba(55, 110, 95, 0.8)',
+                '--progress-color': 'rgba(55, 110, 95, 0.75)',
+                '--panel-bg': 'rgba(255, 255, 255, 0.78)',
+                '--panel-border': 'rgba(120, 200, 180, 0.5)',
+                '--panel-shadow': '0 15px 50px rgba(120, 200, 180, 0.18), 0 0 30px rgba(170, 230, 210, 0.12)',
+                '--panel-name': '#5a9e8f',
+                '--panel-text': 'rgba(55, 110, 95, 0.75)',
+                '--fab-border': 'rgba(120, 200, 180, 0.5)',
+                '--fab-bg': 'rgba(255, 255, 255, 0.9)',
+                '--fab-color': '#5a9e8f',
+                '--fab-shadow': '0 15px 50px rgba(120, 200, 180, 0.18), 0 0 30px rgba(170, 230, 210, 0.12)',
+                '--info-overlay-bg': 'rgba(10, 10, 20, 0.6)',
+                '--info-card-bg': 'rgba(255, 255, 255, 0.92)',
+                '--info-card-border': 'rgba(120, 200, 180, 0.4)',
+                '--info-card-shadow': '0 24px 70px rgba(0, 0, 0, 0.25)',
+                '--info-title': '#5a9e8f',
+                '--info-label': '#5a9e8f',
+                '--info-row': 'rgba(55, 110, 95, 0.75)',
+                '--info-close-border': 'rgba(120, 200, 180, 0.5)',
+                '--info-close-bg': 'rgba(255, 255, 255, 0.9)',
+                '--info-close-color': '#5a9e8f',
+                '--card-front-bg': 'linear-gradient(145deg, rgba(255, 255, 255, 0.75) 0%, rgba(235, 250, 245, 0.75) 60%, rgba(220, 245, 238, 0.7) 100%)',
+                '--card-front-border': 'rgba(120, 200, 180, 0.35)',
+                '--card-front-shadow': '0 12px 35px rgba(55, 110, 95, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.6)',
+                '--card-front-hover-border': 'rgba(120, 200, 180, 0.6)',
+                '--card-front-hover-shadow': '0 15px 50px rgba(120, 200, 180, 0.2), 0 0 30px rgba(170, 230, 210, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
+                '--card-back-bg': 'linear-gradient(145deg, rgba(255, 255, 255, 0.75) 0%, rgba(235, 250, 245, 0.75) 60%, rgba(220, 245, 238, 0.7) 100%)',
+                '--card-back-border': 'rgba(120, 200, 180, 0.4)',
+                '--card-back-shadow': '0 12px 35px rgba(55, 110, 95, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.6)',
+                '--day-number-gradient': 'linear-gradient(180deg, #5a9e8f 0%, #72b5a5 100%)',
+                '--day-label-color': 'rgba(55, 110, 95, 0.6)',
+                '--reward-title': '#5a9e8f',
+                '--reward-desc': 'rgba(55, 110, 95, 0.75)',
+                '--coupon-badge-bg': 'linear-gradient(135deg, #a0dece, #78c8b4)',
+                '--instructions-bg': 'rgba(235, 250, 245, 0.75)',
+                '--instructions-border': 'rgba(120, 200, 180, 0.3)',
+                '--instructions-text': 'rgba(55, 110, 95, 0.8)',
+                '--coupon-overlay-bg': 'rgba(10, 10, 20, 0.75)',
+                '--coupon-card-bg': 'linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(235, 250, 245, 0.92) 100%)',
+                '--coupon-card-border': 'rgba(120, 200, 180, 0.6)',
+                '--coupon-card-shadow': '0 15px 50px rgba(120, 200, 180, 0.18), 0 0 30px rgba(170, 230, 210, 0.12)',
+                '--coupon-title': '#5a9e8f',
+                '--coupon-text': 'rgba(55, 110, 95, 0.85)',
+                '--coupon-text-font': "'Nunito', sans-serif",
+                '--coupon-title-secondary': 'rgba(55, 110, 95, 0.85)',
+                '--locked-label': 'rgba(55, 110, 95, 0.8)',
+                '--locked-label-bg': 'rgba(0, 0, 0, 0.15)'
+            }
+        };
+
+        // Применить палитру: записать все CSS-переменные на :root
+        function applyPalette(name) {
+            const vars = DEBUG_PALETTES[name];
+            if (!vars) return;
+            Object.entries(vars).forEach(([key, value]) => {
+                document.documentElement.style.setProperty(key, value);
+            });
+        }
+
+        // Debug menu: select переключает палитру
+        const debugSelect = document.getElementById('debugMenuSelect');
+        if (debugSelect) {
+            // Восстановить сохраненную палитру
+            const savedPalette = localStorage.getItem('debugPalette');
+            if (savedPalette && DEBUG_PALETTES[savedPalette]) {
+                debugSelect.value = savedPalette;
+                applyPalette(savedPalette);
+            }
+
+            debugSelect.addEventListener('change', () => {
+                const chosen = debugSelect.value;
+                if (chosen && DEBUG_PALETTES[chosen]) {
+                    applyPalette(chosen);
+                    localStorage.setItem('debugPalette', chosen);
+                }
+            });
+        }
+
+        /* ===== /DEBUG MENU ===== */
+
+        // Загружаем тему из JSON только если палитра не выбрана вручную через дебаг
+        if (!localStorage.getItem('debugPalette')) {
+            loadTheme().catch(() => {});
+        }
 
         loadInfo()
             .then((data) => {

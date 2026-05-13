@@ -184,6 +184,42 @@
     width: 100%;
 }
 
+/* --- DEBUG MENU: кнопка-стрелка и скрытый select --- */
+.debug-menu-wrap {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+}
+
+.debug-menu-btn {
+    border: 1px solid var(--panel-border);
+    background: var(--panel-bg);
+    color: var(--panel-name);
+    padding: 6px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.7rem;
+    font-family: 'Mulish', 'Nunito', sans-serif;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    width: 100%;
+}
+
+.debug-menu-btn:hover {
+    border-color: rgba(244, 208, 111, 0.75);
+    box-shadow: 0 15px 50px rgba(244, 208, 111, 0.18), 0 0 30px rgba(120, 160, 230, 0.12);
+}
+
+.debug-menu-select {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    font-size: 16px; /* prevents iOS zoom on focus */
+}
+/* --- /DEBUG MENU --- */
+
 .user-coupons-btn:hover {
     border-color: rgba(244, 208, 111, 0.75);
     box-shadow: 0 15px 50px rgba(244, 208, 111, 0.18), 0 0 30px rgba(120, 160, 230, 0.12);
