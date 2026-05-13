@@ -43,6 +43,8 @@
                         <option value="mint">Мятная</option>
                     </select>
                 </div>
+                <!-- DEBUG: кнопка сброса прогресса -->
+                <button class="debug-reset-btn" id="debugResetBtn" type="button">Сброс</button>
                 <!-- /DEBUG MENU -->
             </div>
             <h1 id="pageTitle">Адвент-календарь</h1>
@@ -719,6 +721,17 @@
                 if (chosen && DEBUG_PALETTES[chosen]) {
                     applyPalette(chosen);
                     localStorage.setItem('debugPalette', chosen);
+                }
+            });
+        }
+
+        // Debug: сброс прогресса (очищает localStorage и перезагружает страницу)
+        const debugResetBtn = document.getElementById('debugResetBtn');
+        if (debugResetBtn) {
+            debugResetBtn.addEventListener('click', () => {
+                if (confirm('Сбросить весь прогресс? Все открытые дни и купоны будут потеряны.')) {
+                    localStorage.removeItem('adventProgress');
+                    location.reload();
                 }
             });
         }
