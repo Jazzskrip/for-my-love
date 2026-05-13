@@ -44,10 +44,14 @@
                             <option value="__style_default">Основной</option>
                             <option value="__style_pickle">Pickle Rick</option>
                         </optgroup>
-                        <optgroup label="Палитра">
+                        <optgroup label="Палитра (основной)">
                             <option value="rose">Розовая</option>
                             <option value="lavender">Лавандовая</option>
                             <option value="mint">Мятная</option>
+                        </optgroup>
+                        <optgroup label="Палитра (Pickle)">
+                            <option value="pickle_portal">Портал</option>
+                            <option value="pickle_morty">Морти</option>
                         </optgroup>
                         <optgroup label="Данные">
                             <option value="__reset">Сброс прогресса</option>
@@ -706,7 +710,122 @@
             }
         };
 
-        // Pickle Rick: полный набор CSS-переменных (тёмный фон, неон)
+        // Светлые палитры для pickle-стиля (белый фон + стилизация карточек/шрифтов)
+        const PICKLE_PALETTES = {
+            // Портал — белый фон, зелёные акценты (портал Рика)
+            pickle_portal: {
+                '--bg-gradient': 'linear-gradient(135deg, #ffffff 0%, #ffffff 100%)',
+                '--bg-spots': 'radial-gradient(ellipse at 50% 45%, rgba(57, 200, 20, 0.12) 0%, transparent 50%), none, none',
+                '--text-main': '#1a2e1a',
+                '--title-gradient-color': '#1a8a10',
+                '--subtitle-color': 'rgba(30, 120, 20, 0.8)',
+                '--progress-color': 'rgba(30, 120, 20, 0.7)',
+                '--panel-bg': 'rgba(255, 255, 255, 0.85)',
+                '--panel-border': 'rgba(40, 160, 30, 0.35)',
+                '--panel-shadow': '0 4px 15px rgba(40, 160, 30, 0.08)',
+                '--panel-name': '#1a8a10',
+                '--panel-text': 'rgba(30, 80, 25, 0.7)',
+                '--fab-border': 'rgba(40, 160, 30, 0.35)',
+                '--fab-bg': 'rgba(255, 255, 255, 0.9)',
+                '--fab-color': '#1a8a10',
+                '--fab-shadow': '0 4px 15px rgba(40, 160, 30, 0.08)',
+                '--info-overlay-bg': 'rgba(0, 0, 0, 0.5)',
+                '--info-card-bg': 'rgba(255, 255, 255, 0.95)',
+                '--info-card-border': 'rgba(40, 160, 30, 0.3)',
+                '--info-card-shadow': '0 10px 30px rgba(0, 0, 0, 0.15)',
+                '--info-title': '#1a8a10',
+                '--info-label': '#1a8a10',
+                '--info-row': 'rgba(30, 80, 25, 0.75)',
+                '--info-close-border': 'rgba(40, 160, 30, 0.35)',
+                '--info-close-bg': 'rgba(255, 255, 255, 0.9)',
+                '--info-close-color': '#1a8a10',
+                '--card-front-bg': 'linear-gradient(145deg, rgba(255, 255, 255, 0.8) 0%, rgba(240, 255, 240, 0.7) 60%, rgba(230, 250, 230, 0.65) 100%)',
+                '--card-front-border': 'rgba(40, 160, 30, 0.25)',
+                '--card-front-shadow': '0 4px 12px rgba(0, 0, 0, 0.08)',
+                '--card-front-hover-border': 'rgba(40, 160, 30, 0.5)',
+                '--card-front-hover-shadow': '0 4px 12px rgba(0, 0, 0, 0.08)',
+                '--card-back-bg': 'linear-gradient(145deg, rgba(255, 255, 255, 0.8) 0%, rgba(240, 255, 240, 0.7) 60%, rgba(230, 250, 230, 0.65) 100%)',
+                '--card-back-border': 'rgba(40, 160, 30, 0.3)',
+                '--card-back-shadow': '0 4px 12px rgba(0, 0, 0, 0.08)',
+                '--day-number-gradient': 'linear-gradient(180deg, #1a8a10 0%, #1a8a10 100%)',
+                '--day-number-color': '#1a8a10',
+                '--day-label-color': 'rgba(30, 120, 20, 0.5)',
+                '--reward-title': '#1a8a10',
+                '--reward-desc': 'rgba(30, 80, 25, 0.7)',
+                '--coupon-badge-bg': 'linear-gradient(135deg, #5cc450, #3aa830)',
+                '--instructions-bg': 'rgba(240, 255, 240, 0.6)',
+                '--instructions-border': 'rgba(40, 160, 30, 0.2)',
+                '--instructions-text': 'rgba(30, 120, 20, 0.7)',
+                '--coupon-overlay-bg': 'rgba(0, 0, 0, 0.6)',
+                '--coupon-card-bg': 'linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(240, 255, 240, 0.92) 100%)',
+                '--coupon-card-border': 'rgba(40, 160, 30, 0.4)',
+                '--coupon-card-shadow': '0 10px 30px rgba(0, 0, 0, 0.12)',
+                '--coupon-title': '#1a8a10',
+                '--coupon-text': 'rgba(30, 80, 25, 0.85)',
+                '--coupon-text-font': "'Russo One', sans-serif",
+                '--coupon-title-secondary': '#1a8a10',
+                '--locked-label': 'rgba(30, 80, 25, 0.6)',
+                '--locked-label-bg': 'rgba(0, 0, 0, 0.1)'
+            },
+
+            // Морти — белый фон, тёплые жёлто-оранжевые акценты (футболка Морти)
+            pickle_morty: {
+                '--bg-gradient': 'linear-gradient(135deg, #ffffff 0%, #ffffff 100%)',
+                '--bg-spots': 'radial-gradient(ellipse at 50% 45%, rgba(255, 200, 50, 0.12) 0%, transparent 50%), none, none',
+                '--text-main': '#2e2210',
+                '--title-gradient-color': '#d48a00',
+                '--subtitle-color': 'rgba(170, 110, 10, 0.8)',
+                '--progress-color': 'rgba(170, 110, 10, 0.7)',
+                '--panel-bg': 'rgba(255, 255, 255, 0.85)',
+                '--panel-border': 'rgba(220, 160, 30, 0.4)',
+                '--panel-shadow': '0 4px 15px rgba(220, 160, 30, 0.08)',
+                '--panel-name': '#d48a00',
+                '--panel-text': 'rgba(130, 85, 10, 0.7)',
+                '--fab-border': 'rgba(220, 160, 30, 0.4)',
+                '--fab-bg': 'rgba(255, 255, 255, 0.9)',
+                '--fab-color': '#d48a00',
+                '--fab-shadow': '0 4px 15px rgba(220, 160, 30, 0.08)',
+                '--info-overlay-bg': 'rgba(0, 0, 0, 0.5)',
+                '--info-card-bg': 'rgba(255, 255, 255, 0.95)',
+                '--info-card-border': 'rgba(220, 160, 30, 0.3)',
+                '--info-card-shadow': '0 10px 30px rgba(0, 0, 0, 0.15)',
+                '--info-title': '#d48a00',
+                '--info-label': '#d48a00',
+                '--info-row': 'rgba(130, 85, 10, 0.75)',
+                '--info-close-border': 'rgba(220, 160, 30, 0.4)',
+                '--info-close-bg': 'rgba(255, 255, 255, 0.9)',
+                '--info-close-color': '#d48a00',
+                '--card-front-bg': 'linear-gradient(145deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 250, 235, 0.7) 60%, rgba(255, 245, 220, 0.65) 100%)',
+                '--card-front-border': 'rgba(220, 160, 30, 0.25)',
+                '--card-front-shadow': '0 4px 12px rgba(0, 0, 0, 0.08)',
+                '--card-front-hover-border': 'rgba(220, 160, 30, 0.5)',
+                '--card-front-hover-shadow': '0 4px 12px rgba(0, 0, 0, 0.08)',
+                '--card-back-bg': 'linear-gradient(145deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 250, 235, 0.7) 60%, rgba(255, 245, 220, 0.65) 100%)',
+                '--card-back-border': 'rgba(220, 160, 30, 0.3)',
+                '--card-back-shadow': '0 4px 12px rgba(0, 0, 0, 0.08)',
+                '--day-number-gradient': 'linear-gradient(180deg, #d48a00 0%, #d48a00 100%)',
+                '--day-number-color': '#d48a00',
+                '--day-label-color': 'rgba(170, 110, 10, 0.5)',
+                '--reward-title': '#d48a00',
+                '--reward-desc': 'rgba(130, 85, 10, 0.7)',
+                '--coupon-badge-bg': 'linear-gradient(135deg, #f0c040, #e0a020)',
+                '--instructions-bg': 'rgba(255, 250, 235, 0.6)',
+                '--instructions-border': 'rgba(220, 160, 30, 0.2)',
+                '--instructions-text': 'rgba(170, 110, 10, 0.7)',
+                '--coupon-overlay-bg': 'rgba(0, 0, 0, 0.6)',
+                '--coupon-card-bg': 'linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 250, 235, 0.92) 100%)',
+                '--coupon-card-border': 'rgba(220, 160, 30, 0.4)',
+                '--coupon-card-shadow': '0 10px 30px rgba(0, 0, 0, 0.12)',
+                '--coupon-title': '#d48a00',
+                '--coupon-text': 'rgba(130, 85, 10, 0.85)',
+                '--coupon-text-font': "'Russo One', sans-serif",
+                '--coupon-title-secondary': '#d48a00',
+                '--locked-label': 'rgba(130, 85, 10, 0.6)',
+                '--locked-label-bg': 'rgba(0, 0, 0, 0.1)'
+            }
+        };
+
+        // Pickle Rick: полный набор CSS-переменных (тёмный фон, неон) — дефолтная pickle палитра
         const PICKLE_VARS = {
             '--bg-gradient': 'linear-gradient(135deg, #0a0a0a 0%, #0d1117 40%, #0a0f0a 100%)',
             '--bg-spots': 'radial-gradient(ellipse at 50% 40%, rgba(57, 255, 20, 0.06) 0%, transparent 50%), none, none',
@@ -775,10 +894,17 @@
         }
 
         // Применить стиль (default или pickle). Управляет классом на body + переменными.
-        function applyStyle(style) {
+        // picklePalette — опциональное имя светлой pickle-палитры
+        function applyStyle(style, picklePalette) {
             if (style === 'pickle') {
                 document.body.classList.add('theme-pickle');
-                applyVars(PICKLE_VARS);
+                // Если есть сохранённая pickle-палитра — используем её, иначе тёмную дефолтную
+                const pp = picklePalette || localStorage.getItem('debugPicklePalette');
+                if (pp && PICKLE_PALETTES[pp]) {
+                    applyVars(PICKLE_PALETTES[pp]);
+                } else {
+                    applyVars(PICKLE_VARS);
+                }
             } else {
                 document.body.classList.remove('theme-pickle');
                 clearInlineVars();
@@ -824,21 +950,34 @@
                 // Переключение стиля
                 if (chosen === '__style_pickle') {
                     localStorage.setItem('debugStyle', 'pickle');
+                    localStorage.removeItem('debugPicklePalette');
+                    clearInlineVars();
                     applyStyle('pickle');
                     debugSelect.value = '';
                     return;
                 }
                 if (chosen === '__style_default') {
                     localStorage.setItem('debugStyle', 'default');
+                    localStorage.removeItem('debugPicklePalette');
                     applyStyle('default');
                     debugSelect.value = '';
                     return;
                 }
 
-                // Палитра (работает только в основном стиле)
+                // Pickle-палитра (светлая, но со стилем pickle)
+                if (chosen && PICKLE_PALETTES[chosen]) {
+                    localStorage.setItem('debugStyle', 'pickle');
+                    localStorage.setItem('debugPicklePalette', chosen);
+                    clearInlineVars();
+                    applyStyle('pickle', chosen);
+                    debugSelect.value = '';
+                    return;
+                }
+
+                // Палитра основного стиля
                 if (chosen && DEBUG_PALETTES[chosen]) {
-                    // Переключаемся на основной стиль если были в pickle
                     localStorage.setItem('debugStyle', 'default');
+                    localStorage.removeItem('debugPicklePalette');
                     document.body.classList.remove('theme-pickle');
                     clearInlineVars();
                     applyVars(DEBUG_PALETTES[chosen]);
