@@ -63,6 +63,7 @@
                         </optgroup>
                         <optgroup label="Игры">
                             <option value="__game_coin">Монетка</option>
+                            <option value="__game_flappy">Flappy Bird</option>
                         </optgroup>
                         <optgroup label="Данные">
                             <option value="__reset">Сброс прогресса</option>
@@ -97,6 +98,17 @@
         </div>
     </div>
 
+    <!-- Видео-модалка -->
+    <div class="video-overlay" id="videoOverlay" aria-hidden="true">
+        <div class="video-card" role="dialog" aria-modal="true">
+            <div class="video-content" id="videoContent"></div>
+            <div class="video-btn-wrap" id="videoBtnWrap">
+                <span class="video-timer" id="videoTimer"></span>
+                <button class="video-close-btn" id="videoCloseBtn" type="button">Продолжить</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Игровая модалка -->
     <div class="game-overlay" id="gameOverlay" aria-hidden="true">
         <div class="game-card" role="dialog" aria-modal="true">
@@ -105,7 +117,8 @@
     </div>
 
     <script src="js/effects.js"></script>
-    <script src="js/games.js"></script>
+    <script src="js/games/coin.js"></script>
+    <script src="js/games/flappy.js"></script>
     <script src="js/calendar.js"></script>
 </body>
 </html>

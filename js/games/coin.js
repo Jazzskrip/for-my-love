@@ -1,11 +1,5 @@
-/* === Mini-games === */
+/* === Монетка === */
 
-/**
- * Монетка — игрок выбирает сторону, монета всегда падает на выбранную.
- * @param {HTMLElement} container — куда рендерить
- * @param {Object} opts
- * @param {Function} opts.onResult — вызывается с 'win'
- */
 function startCoinGame(container, { onResult }) {
     container.innerHTML = '';
 
@@ -70,24 +64,32 @@ function startCoinGame(container, { onResult }) {
         title.textContent = 'Подбрасываю...';
 
         // Анимация: монета крутится, потом останавливается на выбранной стороне
-        const extraSpins = 5; // полных оборотов
+        const extraSpins = 5;
         const targetDeg = chosenSide === 'back' ? (extraSpins * 360 + 180) : (extraSpins * 360);
         coin.style.transform = 'rotateY(' + targetDeg + 'deg)';
         coin.classList.add('coin-spinning');
 
-        setTimeout(() => {
+        setTimeout(function() {
             coin.classList.remove('coin-spinning');
             title.textContent = 'Ты угадал!';
-            result.textContent = chosenSide === 'front' ? '&#10084; Сердечко!' : '&#128139; Поцелуй!';
-            result.innerHTML = result.textContent;
+            result.innerHTML = chosenSide === 'front' ? '&#10084; Сердечко!' : '&#128139; Поцелуй!';
             result.classList.add('coin-result-visible');
 
-            setTimeout(() => {
-                if (onResult) onResult('win');
-            }, 1200);
+            // Пауза, показываем победу
+            setTimeout(function() {
+                title.textContent = '🎉 Победа!';
+                title.classList.add('coin-game-title-win');
+                buttons.style.display = 'none';
+                result.innerHTML = 'Ты выиграл!';
+
+                // Даём прочитать, потом вызываем onResult
+                setTimeout(function() {
+                    if (onResult) onResult('win');
+                }, 2000);
+            }, 1500);
         }, 2000);
     }
 
-    btnFront.addEventListener('click', () => handleChoice('front'));
-    btnBack.addEventListener('click', () => handleChoice('back'));
+    btnFront.addEventListener('click', function() { handleChoice('front'); });
+    btnBack.addEventListener('click', function() { handleChoice('back'); });
 }

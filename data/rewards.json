@@ -6,7 +6,7 @@
   },
   "items": [
     { "slot": 1, "icon": "☀️", "title": "День 1", "desc": "Описание подарка первого дня." },
-    { "slot": 2, "icon": "🌙", "title": "День 2", "desc": "Описание подарка второго дня." },
+    { "slot": 2, "icon": "🌙", "title": "День 2", "desc": "Описание подарка второго дня.", "video": { "url": "https://www.youtube.com/embed/dQw4w9WgXcQ", "buttonDelay": 10 } },
     { "slot": 3, "icon": "⭐", "title": "День 3", "desc": "Описание подарка третьего дня.", "animation": "glitch", "coupon": true },
     { "slot": 4, "icon": "🎈", "title": "День 4", "desc": "Описание подарка четвёртого дня." },
     { "slot": 5, "icon": "🎁", "title": "День 5", "desc": "Описание подарка пятого дня.", "tryAgain": { "attempts": 3 } },

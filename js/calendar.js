@@ -222,13 +222,106 @@ function markDayOpened(card, dayNumber, reward) {
     updateLockState();
 }
 
-function showCouponModal(reward, card, dayNumber) {
-    couponTitle.textContent = reward.title;
-    couponDesc.textContent = reward.desc;
-    couponMessage.textContent = 'Нажми, чтобы получить подарок.';
-    pendingCouponOpen = { card, dayNumber, reward };
-    setCouponOpen(true);
-    launchConfetti();
+function showCouponModal(reward) {
+    return new Promise((resolve) => {
+        couponTitle.textContent = reward.title;
+        couponDesc.textContent = reward.desc;
+        couponMessage.textContent = 'Нажми, чтобы получить подарок.';
+        pendingCouponOpen = resolve;
+        setCouponOpen(true);
+        launchConfetti();
+    });
+}
+
+function showVideoModal(video) {
+    return new Promise((resolve) => {
+        const overlay = document.getElementById('videoOverlay');
+        const content = document.getElementById('videoContent');
+        const btnWrap = document.getElementById('videoBtnWrap');
+        const btn = document.getElementById('videoCloseBtn');
+        const timer = document.getElementById('videoTimer');
+        if (!overlay || !content) { resolve(); return; }
+
+        content.innerHTML = '';
+        const iframe = document.createElement('iframe');
+        iframe.src = video.url + '?autoplay=1&rel=0';
+        iframe.setAttribute('allow', 'autoplay; encrypted-media');
+        iframe.setAttribute('allowfullscreen', '');
+        iframe.className = 'video-iframe';
+        content.appendChild(iframe);
+
+        btn.style.display = 'none';
+        timer.style.display = 'inline';
+        let remaining = video.buttonDelay || 10;
+        timer.textContent = remaining;
+
+        document.body.classList.add('video-open');
+        overlay.setAttribute('aria-hidden', 'false');
+
+        const interval = setInterval(() => {
+            remaining--;
+            timer.textContent = remaining;
+            if (remaining <= 0) {
+                clearInterval(interval);
+                timer.style.display = 'none';
+                btn.style.display = 'inline-block';
+            }
+        }, 1000);
+
+        function close() {
+            clearInterval(interval);
+            document.body.classList.remove('video-open');
+            overlay.setAttribute('aria-hidden', 'true');
+            content.innerHTML = '';
+            btn.removeEventListener('click', close);
+            resolve();
+        }
+        btn.addEventListener('click', close);
+    });
+}
+
+function showGameModal(gameId) {
+    return new Promise((resolve) => {
+        if (!gameOverlay || !gameContent) { resolve('win'); return; }
+        gameContent.innerHTML = '';
+        document.body.classList.add('game-open');
+        gameOverlay.setAttribute('aria-hidden', 'false');
+
+        const games = {
+            coin: typeof startCoinGame !== 'undefined' ? startCoinGame : null,
+            flappy: typeof startFlappyGame !== 'undefined' ? startFlappyGame : null
+        };
+        const gameFn = games[gameId];
+        if (!gameFn) { closeGameModal(); resolve('win'); return; }
+
+        gameFn(gameContent, {
+            onResult: function (result) {
+                closeGameModal();
+                resolve(result);
+            }
+        });
+    });
+}
+
+async function runOpenFlow(card, dayNumber, reward) {
+    // 1. Game (if any)
+    if (reward.game) {
+        const result = await showGameModal(reward.game);
+        if (result !== 'win') return;
+    }
+
+    // 2. Flip card + save progress
+    markDayOpened(card, dayNumber, reward);
+
+    // 3. Video (if any)
+    if (reward.video) {
+        await showVideoModal(reward.video);
+    }
+
+    // 4. Coupon (if any)
+    if (reward.coupon) {
+        await showCouponModal(reward);
+    }
 }
 
 function handleCardToggle(card, dayNumber, reward) {
@@ -242,12 +335,7 @@ function handleCardToggle(card, dayNumber, reward) {
         return;
     }
 
-    if (reward.coupon) {
-        showCouponModal(reward, card, dayNumber);
-        return;
-    }
-
-    markDayOpened(card, dayNumber, reward);
+    runOpenFlow(card, dayNumber, reward);
 }
 
 function renderRewards(items) {
@@ -712,33 +800,10 @@ function applyStyle(style, picklePalette) {
 const gameOverlay = document.getElementById('gameOverlay');
 const gameContent = document.getElementById('gameContent');
 
-function openGameModal(gameId) {
-    if (!gameOverlay || !gameContent) return;
-    gameContent.innerHTML = '';
-    document.body.classList.add('game-open');
-    gameOverlay.setAttribute('aria-hidden', 'false');
-
-    const games = { coin: startCoinGame };
-    const gameFn = games[gameId];
-    if (gameFn) {
-        gameFn(gameContent, {
-            onResult: function() {
-                closeGameModal();
-            }
-        });
-    }
-}
-
 function closeGameModal() {
     document.body.classList.remove('game-open');
     if (gameOverlay) gameOverlay.setAttribute('aria-hidden', 'true');
     if (gameContent) gameContent.innerHTML = '';
-}
-
-if (gameOverlay) {
-    gameOverlay.addEventListener('click', function(e) {
-        if (e.target === gameOverlay) closeGameModal();
-    });
 }
 
 /* Эффект матрицы для дня 3 */
@@ -785,9 +850,10 @@ if (debugSelect) {
         const chosen = debugSelect.value;
 
         // Игры
-        if (chosen === '__game_coin') {
+        if (chosen && chosen.startsWith('__game_')) {
+            var gameId = chosen.replace('__game_', '');
             debugSelect.value = '';
-            openGameModal('coin');
+            showGameModal(gameId);
             return;
         }
 
@@ -912,13 +978,10 @@ loadRewards()
     });
 
 couponCard.addEventListener('click', () => {
-    if (!pendingCouponOpen) {
-        setCouponOpen(false);
-        return;
-    }
-
-    const { card, dayNumber, reward } = pendingCouponOpen;
-    pendingCouponOpen = null;
     setCouponOpen(false);
-    markDayOpened(card, dayNumber, reward);
+    if (pendingCouponOpen) {
+        const resolve = pendingCouponOpen;
+        pendingCouponOpen = null;
+        resolve();
+    }
 });
