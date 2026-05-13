@@ -200,6 +200,7 @@ function triggerShine(card) {
 }
 
 function markDayOpened(card, dayNumber, reward) {
+    card.querySelectorAll('.matrix-rain').forEach(el => el.remove());
     card.classList.add('flipped');
     if (!openedDays.includes(dayNumber)) {
         openedDays.push(dayNumber);
@@ -707,41 +708,35 @@ function applyStyle(style, picklePalette) {
     }
 }
 
-const debugSelect = document.getElementById('debugMenuSelect');
-if (debugSelect) {
-    function applyDay3Effect(fx) {
-        document.body.classList.remove('day3-glitch', 'day3-matrix');
-        document.querySelectorAll('.matrix-rain').forEach(el => el.remove());
-        if (fx === 'glitch' || fx === 'matrix') {
-            document.body.classList.add('day3-' + fx);
-        }
-        if (fx === 'matrix') {
-            const card3 = document.querySelector('.day-card[data-day="3"]');
-            if (card3) {
-                ['.card-front', '.card-back'].forEach(sel => {
-                    const face = card3.querySelector(sel);
-                    if (!face) return;
-                    const rain = document.createElement('div');
-                    rain.className = 'matrix-rain';
-                    for (let c = 0; c < 5; c++) {
-                        const col = document.createElement('div');
-                        col.className = 'matrix-col';
-                        let digits = '';
-                        for (let i = 0; i < 40; i++) {
-                            digits += Math.floor(Math.random() * 10) + '\n';
-                        }
-                        col.textContent = digits;
-                        col.style.animationDelay = (c * 0.3) + 's';
-                        col.style.animationDuration = (1.5 + Math.random() * 1) + 's';
-                        rain.appendChild(col);
-                    }
-                    face.appendChild(rain);
-                });
+/* Эффект матрицы для дня 3 */
+function applyDay3MatrixEffect() {
+    document.querySelectorAll('.matrix-rain').forEach(el => el.remove());
+    document.body.classList.add('day3-matrix');
+    const card3 = document.querySelector('.day-card[data-day="3"]');
+    if (card3) {
+        const front = card3.querySelector('.card-front');
+        if (front) {
+            const rain = document.createElement('div');
+            rain.className = 'matrix-rain';
+            for (let c = 0; c < 5; c++) {
+                const col = document.createElement('div');
+                col.className = 'matrix-col';
+                let digits = '';
+                for (let i = 0; i < 40; i++) {
+                    digits += Math.floor(Math.random() * 10) + '\n';
+                }
+                col.textContent = digits;
+                col.style.animationDelay = (c * 0.3) + 's';
+                col.style.animationDuration = (1.5 + Math.random() * 1) + 's';
+                rain.appendChild(col);
             }
+            front.appendChild(rain);
         }
     }
-    applyDay3Effect(localStorage.getItem('debugDay3Effect') || 'glitch');
+}
 
+const debugSelect = document.getElementById('debugMenuSelect');
+if (debugSelect) {
     const savedStyle = localStorage.getItem('debugStyle') || 'default';
     if (savedStyle === 'pickle') {
         applyStyle('pickle');
@@ -755,14 +750,6 @@ if (debugSelect) {
 
     debugSelect.addEventListener('change', () => {
         const chosen = debugSelect.value;
-
-        if (chosen === '__fx_glitch' || chosen === '__fx_matrix' || chosen === '__fx_none') {
-            const fx = chosen.replace('__fx_', '');
-            localStorage.setItem('debugDay3Effect', fx);
-            applyDay3Effect(fx);
-            debugSelect.value = '';
-            return;
-        }
 
         if (chosen && chosen.startsWith('__date_')) {
             const dateCmd = chosen.replace('__date_', '');
@@ -876,6 +863,7 @@ loadRewards()
             .sort((a, b) => a.slot - b.slot);
         loadLocalProgress();
         renderRewards(rewards);
+        applyDay3MatrixEffect();
     })
     .catch(() => {
         if (instructionsText) {

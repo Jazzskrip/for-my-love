@@ -921,102 +921,7 @@ body.user-coupon-open .container {
             opacity: 0;
         }
 
-/* === DAY 3 EFFECTS: глитч и матрица, переключаются через body class === */
-
-/* ---------- ГЛИТЧ (body.day3-glitch) ---------- */
-body.day3-glitch .day-card[data-day="3"]:not(.opened) .card-front,
-body.day3-glitch .day-card[data-day="3"]:not(.opened) .card-back {
-    animation: glitch 3s infinite;
-}
-
-@keyframes glitch {
-    0%, 5%, 42%, 45%, 79%, 82%, 100% {
-        box-shadow: var(--card-front-shadow);
-    }
-    2% {
-        box-shadow:
-            -8px -3px 0 rgba(255, 0, 80, 0.9),
-            8px 3px 0 rgba(0, 255, 200, 0.9),
-            0 -6px 0 rgba(255, 230, 0, 0.6);
-    }
-    3% {
-        box-shadow:
-            7px 0 0 rgba(0, 200, 255, 1),
-            -7px 0 0 rgba(255, 0, 80, 0.8),
-            0 5px 0 rgba(180, 0, 255, 0.7);
-    }
-    4% {
-        box-shadow:
-            -5px 5px 0 rgba(255, 0, 80, 0.7),
-            5px -4px 0 rgba(0, 255, 100, 0.8),
-            -9px 0 0 rgba(0, 200, 255, 0.6);
-    }
-    43% {
-        box-shadow:
-            10px 0 0 rgba(0, 255, 200, 1),
-            -10px 0 0 rgba(255, 0, 80, 1),
-            0 -5px 0 rgba(255, 230, 0, 0.7),
-            0 7px 0 rgba(180, 0, 255, 0.6);
-    }
-    44% {
-        box-shadow:
-            -7px -5px 0 rgba(255, 0, 150, 0.9),
-            8px 4px 0 rgba(0, 255, 180, 0.9),
-            5px -7px 0 rgba(0, 150, 255, 0.7);
-    }
-    44.5% {
-        box-shadow:
-            -4px 0 0 rgba(255, 0, 80, 0.5),
-            4px 0 0 rgba(0, 255, 200, 0.5);
-    }
-    80% {
-        box-shadow:
-            -8px 0 0 rgba(255, 0, 80, 0.9),
-            8px 0 0 rgba(0, 255, 200, 0.9),
-            0 6px 0 rgba(255, 230, 0, 0.7),
-            0 -5px 0 rgba(180, 0, 255, 0.6);
-    }
-    81% {
-        box-shadow:
-            6px -4px 0 rgba(0, 200, 255, 0.9),
-            -7px 5px 0 rgba(255, 0, 100, 0.8);
-    }
-}
-
-/* Полоски-помехи (сканлайны) */
-body.day3-glitch .day-card[data-day="3"]:not(.opened) .card-front::after,
-body.day3-glitch .day-card[data-day="3"]:not(.opened) .card-back::after {
-    content: '';
-    position: absolute;
-    inset: -4px;
-    border-radius: inherit;
-    background: repeating-linear-gradient(
-        0deg,
-        transparent 0px,
-        transparent 3px,
-        rgba(255, 0, 80, 0.06) 3px,
-        rgba(255, 0, 80, 0.06) 4px,
-        transparent 4px,
-        transparent 8px
-    );
-    pointer-events: none;
-    z-index: 2;
-    animation: glitchBars 4s infinite;
-}
-
-@keyframes glitchBars {
-    0%, 100% { opacity: 0.4; transform: translateY(0); }
-    2% { opacity: 1; transform: translateY(-2px) scaleY(1.02); }
-    4% { opacity: 0.6; transform: translateY(1px); }
-    5% { opacity: 0.4; transform: translateY(0); }
-    43% { opacity: 0.4; transform: translateY(0); }
-    44% { opacity: 1; transform: translateY(3px) scaleY(0.98); }
-    45% { opacity: 0.8; transform: translateY(-1px); }
-    46% { opacity: 0.4; transform: translateY(0); }
-    80% { opacity: 0.4; transform: translateY(0); }
-    81% { opacity: 0.9; transform: translateY(-2px); }
-    82% { opacity: 0.4; transform: translateY(0); }
-}
+/* === DAY 3 EFFECT: матрица, активируется через body.day3-matrix === */
 
 /* ---------- МАТРИЦА (body.day3-matrix) ---------- */
 
@@ -1374,7 +1279,7 @@ body.theme-pickle .day-card.flipped:nth-child(3n) {
     transform: rotate(-2.5deg) rotateY(180deg);
 }
 
-/* Pickle + day 3 glitch: сохраняем наклон + flip */
+/* Pickle + day 3: сохраняем наклон + flip */
 body.theme-pickle .day-card[data-day="3"].flipped {
     transform: rotate(-2.5deg) rotateY(180deg);
 }
