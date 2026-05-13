@@ -256,3 +256,84 @@ body.video-open .video-overlay {
 .flappy-retry-btn:active {
     transform: translateY(0);
 }
+
+/* === Roulette === */
+.roulette-game {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.roulette-canvas {
+    display: block;
+}
+
+.roulette-arrow {
+    position: absolute;
+    top: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 28px;
+    color: #e8607a;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    z-index: 2;
+    line-height: 1;
+}
+
+.roulette-msg {
+    font-family: 'Nunito', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: #2a2f3a;
+    min-height: 32px;
+    margin-top: 16px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.roulette-msg-visible {
+    opacity: 1;
+}
+.roulette-msg-win {
+    color: #c47085;
+    font-size: 24px;
+}
+
+.roulette-btn-wrap {
+    margin-top: 20px;
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+}
+
+.roulette-bet-btn {
+    font-family: 'Nunito', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 14px 32px;
+    border-radius: 16px;
+    border: 2px solid;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+.roulette-bet-red {
+    background: #d32f2f;
+    border-color: #b71c1c;
+    color: #fff;
+}
+.roulette-bet-black {
+    background: #212121;
+    border-color: #000;
+    color: #fff;
+}
+.roulette-bet-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+}
+.roulette-bet-btn:active {
+    transform: translateY(0);
+}
+.roulette-bet-btn:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}

@@ -66,10 +66,11 @@ const games = {
 
 ## Готовые игры
 
-| ID | Файл | Функция |
-|---|---|---|
-| `coin` | `js/games/coin.js` | `startCoinGame` |
-| `flappy` | `js/games/flappy.js` | `startFlappyGame` |
+| ID | Файл | Функция | Описание |
+|---|---|---|---|
+| `coin` | `js/games/coin.js` | `startCoinGame` | Выбери сторону монетки (сердечко/поцелуй). Всегда win |
+| `flappy` | `js/games/flappy.js` | `startFlappyGame` | Пролети через 5 труб, приземлись на бургер. Canvas |
+| `roulette` | `js/games/roulette.js` | `startRouletteGame` | Ставка на красное/чёрное. Первый спин — проигрыш, второй — win |
 
 ## Пример: день с игрой + купоном
 

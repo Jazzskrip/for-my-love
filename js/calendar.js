@@ -335,19 +335,32 @@ function showVideoModal(video) {
     });
 }
 
+const FULLSCREEN_GAMES = ['day3hacker'];
+
 function showGameModal(gameId) {
     return new Promise((resolve) => {
+        const games = {
+            coin: typeof startCoinGame !== 'undefined' ? startCoinGame : null,
+            flappy: typeof startFlappyGame !== 'undefined' ? startFlappyGame : null,
+            day3hacker: typeof startDay3HackerGame !== 'undefined' ? startDay3HackerGame : null,
+            roulette: typeof startRouletteGame !== 'undefined' ? startRouletteGame : null
+        };
+        const gameFn = games[gameId];
+        if (!gameFn) { resolve('win'); return; }
+
+        if (FULLSCREEN_GAMES.includes(gameId)) {
+            gameFn(null, {
+                onResult: function (result) {
+                    resolve(result);
+                }
+            });
+            return;
+        }
+
         if (!gameOverlay || !gameContent) { resolve('win'); return; }
         gameContent.innerHTML = '';
         document.body.classList.add('game-open');
         gameOverlay.setAttribute('aria-hidden', 'false');
-
-        const games = {
-            coin: typeof startCoinGame !== 'undefined' ? startCoinGame : null,
-            flappy: typeof startFlappyGame !== 'undefined' ? startFlappyGame : null
-        };
-        const gameFn = games[gameId];
-        if (!gameFn) { closeGameModal(); resolve('win'); return; }
 
         gameFn(gameContent, {
             onResult: function (result) {
