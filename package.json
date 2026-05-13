@@ -1,0 +1,7 @@
+{
+  "name": "for-my-love",
+  "private": true,
+  "scripts": {
+    "dev": "npx serve ."
+  }
+}

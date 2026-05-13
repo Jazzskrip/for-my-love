@@ -61,15 +61,7 @@
     </div>
 
     <script>
-                        const sessionKey = 'adventSession';
-        const session = JSON.parse(localStorage.getItem(sessionKey) || 'null');
-        if (!session || session.group !== 'A') {
-            window.location.href = 'index.html';
-        }
-
         const calendar = document.getElementById('calendar');
-        const progressUpdateUrl = '/api/progress-update';
-        const progressReadUrl = '/api/progress-read';
         const couponOverlay = document.getElementById('couponOverlay');
         const couponCard = document.getElementById('couponCard');
         const couponTitle = document.getElementById('couponTitle');
@@ -94,9 +86,6 @@
         const userCouponList = document.getElementById('userCouponList');
         const userCouponClose = document.getElementById('userCouponClose');
 
-        if (userName && session && session.displayName) {
-            userName.textContent = session.displayName;
-        }
 
         const snowParticles = [];
 
@@ -262,47 +251,23 @@
             userCouponList.appendChild(renderSection('Использованные', used));
         }
 
-        async function loadRemoteProgress() {
-            if (!session || !session.login) {
-                return;
-            }
+        function loadLocalProgress() {
             try {
-                const response = await fetch(`${progressReadUrl}?login=${encodeURIComponent(session.login)}`);
-                if (!response.ok) {
-                    return;
-                }
-                const payload = await response.json();
-                const data = payload && payload.data ? payload.data : null;
-                const remoteDays = data && Array.isArray(data.opened_days) ? data.opened_days : [];
-                const remoteCoupons = data && Array.isArray(data.coupons) ? data.coupons : [];
-                openedDays = Array.from(new Set(remoteDays))
-                    .map((value) => parseInt(value, 10))
-                    .filter((value) => Number.isFinite(value) && value > 0)
-                    .sort((a, b) => a - b);
-                openedCoupons = remoteCoupons.filter((item) => item && typeof item === 'object' && Number.isFinite(Number(item.slot)));
+                const saved = JSON.parse(localStorage.getItem('adventProgress') || '{}');
+                openedDays = Array.isArray(saved.openedDays) ? saved.openedDays : [];
+                openedCoupons = Array.isArray(saved.openedCoupons) ? saved.openedCoupons : [];
                 computeLastOpened();
             } catch (error) {
+                openedDays = [];
+                openedCoupons = [];
             }
         }
 
-        async function syncProgress() {
-            if (!session || !session.login || !session.group) {
-                return;
-            }
-            try {
-                await fetch(progressUpdateUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        login: session.login,
-                        displayName: session.displayName || session.login,
-                        group: session.group,
-                        openedDays,
-                        coupons: openedCoupons
-                    })
-                });
-            } catch (error) {
-            }
+        function saveLocalProgress() {
+            localStorage.setItem('adventProgress', JSON.stringify({
+                openedDays,
+                openedCoupons
+            }));
         }
 
         const cards = [];
@@ -416,7 +381,7 @@
                     });
                 }
             }
-            syncProgress();
+            saveLocalProgress();
             updateLockState();
             const nextCard = getCardByDay(dayNumber + 1);
             if (nextCard) {
@@ -530,8 +495,7 @@
         }
 
         if (userCouponsBtn && userCouponOverlay) {
-            userCouponsBtn.addEventListener('click', async () => {
-                await loadRemoteProgress();
+            userCouponsBtn.addEventListener('click', () => {
                 renderUserCoupons();
                 setUserCouponOpen(true);
             });
@@ -592,7 +556,7 @@
                 rewards = data.items
                     .slice()
                     .sort((a, b) => a.slot - b.slot);
-                await loadRemoteProgress();
+                loadLocalProgress();
                 renderRewards(rewards);
             })
             .catch(() => {
