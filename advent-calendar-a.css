@@ -1127,11 +1127,152 @@ body.user-coupon-open .container {
         padding-bottom: 100%;
         height: 0;
     }
-            
+
     .card-front, .card-back {
         height: auto;
         min-height: 100%;
     }
 }
 
-    
+/* ====================================================================
+   DEBUG THEME: Pickle Rick
+   Активируется классом body.theme-pickle
+   Для удаления — убрать весь этот блок + связанный JS + шрифт Bangers
+   ==================================================================== */
+
+/* Шрифты: заменяем Cormorant на Bangers, Nunito на системный жирный */
+body.theme-pickle h1,
+body.theme-pickle .coupon-card h3,
+body.theme-pickle .info-card h3,
+body.theme-pickle .user-coupon-head h3 {
+    font-family: 'Bangers', cursive;
+    letter-spacing: 3px;
+    -webkit-text-fill-color: unset;
+    background: none;
+    color: var(--title-gradient-color, #39ff14);
+    text-shadow: 0 0 20px rgba(57, 255, 20, 0.5), 0 0 40px rgba(57, 255, 20, 0.2);
+}
+
+body.theme-pickle .subtitle {
+    font-family: 'Bangers', cursive;
+    font-style: normal;
+    letter-spacing: 2px;
+}
+
+body.theme-pickle .day-number {
+    font-family: 'Bangers', cursive;
+    -webkit-text-fill-color: unset;
+    background: none;
+    color: var(--day-number-color, #39ff14);
+    text-shadow: 0 0 12px rgba(57, 255, 20, 0.6);
+}
+
+body.theme-pickle .day-label {
+    font-family: 'Bangers', cursive;
+    letter-spacing: 4px;
+    font-size: 0.8rem;
+}
+
+body.theme-pickle .reward-title {
+    font-family: 'Bangers', cursive;
+    letter-spacing: 1px;
+}
+
+/* Карточки: наклон + neon glow border */
+body.theme-pickle .day-card:nth-child(odd) {
+    transform: rotate(-1.5deg);
+}
+body.theme-pickle .day-card:nth-child(even) {
+    transform: rotate(1.5deg);
+}
+body.theme-pickle .day-card:nth-child(3n) {
+    transform: rotate(-2.5deg);
+}
+
+/* Сброс наклона при перевороте */
+body.theme-pickle .day-card.flipped:nth-child(odd) {
+    transform: rotate(-1.5deg) rotateY(180deg);
+}
+body.theme-pickle .day-card.flipped:nth-child(even) {
+    transform: rotate(1.5deg) rotateY(180deg);
+}
+body.theme-pickle .day-card.flipped:nth-child(3n) {
+    transform: rotate(-2.5deg) rotateY(180deg);
+}
+
+/* Neon glow на карточках */
+body.theme-pickle .card-front {
+    border-width: 2px;
+    border-style: solid;
+}
+
+body.theme-pickle .day-card:hover .card-front {
+    box-shadow: 0 0 20px rgba(57, 255, 20, 0.3), 0 0 40px rgba(57, 255, 20, 0.1), inset 0 0 15px rgba(57, 255, 20, 0.05);
+}
+
+/* Пульсация glow на доступной карточке */
+body.theme-pickle .day-card.available .card-front {
+    animation: pickleGlow 2s ease-in-out infinite;
+}
+
+@keyframes pickleGlow {
+    0%, 100% { box-shadow: 0 0 15px rgba(57, 255, 20, 0.2), 0 0 30px rgba(57, 255, 20, 0.1); }
+    50% { box-shadow: 0 0 25px rgba(57, 255, 20, 0.4), 0 0 50px rgba(57, 255, 20, 0.2), 0 0 80px rgba(57, 255, 20, 0.1); }
+}
+
+/* Скругление карточек чуть меньше — более "рваный" вид */
+body.theme-pickle .card-front,
+body.theme-pickle .card-back {
+    border-radius: 12px;
+}
+body.theme-pickle .card-front::before {
+    border-radius: 12px;
+}
+
+/* Coupon badge в pickle стиле */
+body.theme-pickle .coupon-badge {
+    font-family: 'Bangers', cursive;
+    letter-spacing: 2px;
+    font-size: 0.7rem;
+}
+
+/* Панель и кнопки */
+body.theme-pickle .user-panel,
+body.theme-pickle .user-coupons-btn,
+body.theme-pickle .debug-menu-btn {
+    border-radius: 8px;
+}
+
+body.theme-pickle .user-name {
+    font-family: 'Bangers', cursive;
+    letter-spacing: 2px;
+}
+
+/* Info fab */
+body.theme-pickle .info-fab {
+    font-family: 'Bangers', cursive;
+    border-radius: 8px;
+}
+
+/* Снег отключаем в pickle теме (вместо него — ничего, фон и так космический) */
+body.theme-pickle .snow-canvas {
+    opacity: 0;
+}
+
+/* Sparkle mark — заменяем на портал-эмодзи */
+body.theme-pickle .day-card::before {
+    content: "\1F7E2";
+    font-size: 0.7rem;
+}
+
+/* Instructions */
+body.theme-pickle .instructions {
+    border-radius: 8px;
+    border-width: 2px;
+}
+
+/* ====================================================================
+   /DEBUG THEME: Pickle Rick
+   ==================================================================== */
+
+
