@@ -1,0 +1,39 @@
+{
+  "page": {
+    "title": "Адвент-календарь",
+    "subtitle": "30 дней волшебства",
+    "instructions": "Нажимай на день, чтобы открыть подарок. Каждый день — новая ячейка."
+  },
+  "items": [
+    { "slot": 1, "icon": "☀️", "title": "День 1", "desc": "Описание подарка первого дня." },
+    { "slot": 2, "icon": "🌙", "title": "День 2", "desc": "Описание подарка второго дня." },
+    { "slot": 3, "icon": "⭐", "title": "День 3", "desc": "Описание подарка третьего дня.", "animation": "glitch", "coupon": true },
+    { "slot": 4, "icon": "🎈", "title": "День 4", "desc": "Описание подарка четвёртого дня." },
+    { "slot": 5, "icon": "🎁", "title": "День 5", "desc": "Описание подарка пятого дня.", "tryAgain": { "attempts": 3 } },
+    { "slot": 6, "icon": "🌈", "title": "День 6", "desc": "Описание подарка шестого дня.", "coupon": true },
+    { "slot": 7, "icon": "🍀", "title": "День 7", "desc": "Описание подарка седьмого дня.", "game": "flappy" },
+    { "slot": 8, "icon": "🔮", "title": "День 8", "desc": "Описание подарка восьмого дня." },
+    { "slot": 9, "icon": "🎵", "title": "День 9", "desc": "Описание подарка девятого дня.", "coupon": true },
+    { "slot": 10, "icon": "🌺", "title": "День 10", "desc": "Описание подарка десятого дня.", "tryAgain": { "attempts": 3 }, "video": { "url": "https://www.youtube.com/embed/VIDEO_ID", "buttonDelay": 10 } },
+    { "slot": 11, "icon": "🦋", "title": "День 11", "desc": "Описание подарка одиннадцатого дня." },
+    { "slot": 12, "icon": "🍂", "title": "День 12", "desc": "Описание подарка двенадцатого дня." },
+    { "slot": 13, "icon": "❄️", "title": "День 13", "desc": "Описание подарка тринадцатого дня.", "coupon": true },
+    { "slot": 14, "icon": "🔥", "title": "День 14", "desc": "Описание подарка четырнадцатого дня.", "game": "coin" },
+    { "slot": 15, "icon": "💎", "title": "День 15", "desc": "Описание подарка пятнадцатого дня.", "game": "roulette", "coupon": true },
+    { "slot": 16, "icon": "🎭", "title": "День 16", "desc": "Описание подарка шестнадцатого дня." },
+    { "slot": 17, "icon": "🌊", "title": "День 17", "desc": "Описание подарка семнадцатого дня." },
+    { "slot": 18, "icon": "🎪", "title": "День 18", "desc": "Описание подарка восемнадцатого дня.", "video": { "url": "https://www.youtube.com/embed/VIDEO_ID", "buttonDelay": 15 } },
+    { "slot": 19, "icon": "🏔️", "title": "День 19", "desc": "Описание подарка девятнадцатого дня." },
+    { "slot": 20, "icon": "🎯", "title": "День 20", "desc": "Описание подарка двадцатого дня.", "tryAgain": { "attempts": 2 }, "game": "coin", "coupon": true },
+    { "slot": 21, "icon": "🌻", "title": "День 21", "desc": "Описание подарка двадцать первого дня." },
+    { "slot": 22, "icon": "🎨", "title": "День 22", "desc": "Описание подарка двадцать второго дня." },
+    { "slot": 23, "icon": "🧭", "title": "День 23", "desc": "Описание подарка двадцать третьего дня.", "coupon": true },
+    { "slot": 24, "icon": "🎠", "title": "День 24", "desc": "Описание подарка двадцать четвёртого дня.", "game": "guess" },
+    { "slot": 25, "icon": "🌟", "title": "День 25", "desc": "Описание подарка двадцать пятого дня.", "video": { "url": "https://www.youtube.com/embed/VIDEO_ID", "buttonDelay": 10 } },
+    { "slot": 26, "icon": "🎶", "title": "День 26", "desc": "Описание подарка двадцать шестого дня." },
+    { "slot": 27, "icon": "🦄", "title": "День 27", "desc": "Описание подарка двадцать седьмого дня.", "coupon": true },
+    { "slot": 28, "icon": "🌸", "title": "День 28", "desc": "Описание подарка двадцать восьмого дня.", "game": "invaders" },
+    { "slot": 29, "icon": "🎆", "title": "День 29", "desc": "Описание подарка двадцать девятого дня." },
+    { "slot": 30, "icon": "🏆", "title": "День 30", "desc": "Описание подарка тридцатого дня.", "animation": "shatter", "tryAgain": { "attempts": 2 }, "game": "flappy", "video": { "url": "https://www.youtube.com/embed/VIDEO_ID", "buttonDelay": 20 }, "coupon": true }
+  ]
+}
