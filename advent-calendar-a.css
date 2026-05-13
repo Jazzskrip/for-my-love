@@ -1145,11 +1145,19 @@ body.theme-pickle {
     font-family: system-ui, -apple-system, sans-serif;
 }
 
-body.theme-pickle h1,
+body.theme-pickle h1 {
+    font-family: 'Russo One', sans-serif;
+    letter-spacing: 4px;
+    -webkit-text-fill-color: unset;
+    background: none;
+    color: var(--title-gradient-color, #39ff14);
+    text-shadow: 0 0 15px rgba(57, 255, 20, 0.35);
+}
+
 body.theme-pickle .coupon-card h3,
 body.theme-pickle .info-card h3,
 body.theme-pickle .user-coupon-head h3 {
-    font-family: 'Bangers', cursive;
+    font-family: 'Russo One', sans-serif;
     letter-spacing: 3px;
     -webkit-text-fill-color: unset;
     background: none;
@@ -1158,7 +1166,7 @@ body.theme-pickle .user-coupon-head h3 {
 }
 
 body.theme-pickle .subtitle {
-    font-family: 'Bangers', cursive;
+    font-family: 'Russo One', sans-serif;
     font-style: normal;
     letter-spacing: 2px;
 }
@@ -1178,7 +1186,7 @@ body.theme-pickle .day-label {
 }
 
 body.theme-pickle .reward-title {
-    font-family: 'Bangers', cursive;
+    font-family: 'Russo One', sans-serif;
     letter-spacing: 1px;
 }
 
@@ -1203,7 +1211,7 @@ body.theme-pickle .info-label,
 body.theme-pickle .user-coupon-title,
 body.theme-pickle .user-coupon-name,
 body.theme-pickle .coupon-card .coupon-title {
-    font-family: 'Bangers', cursive;
+    font-family: 'Russo One', sans-serif;
     letter-spacing: 1px;
 }
 
@@ -1239,15 +1247,11 @@ body.theme-pickle .day-card:hover .card-front {
     border-color: rgba(57, 255, 20, 0.6);
 }
 
-/* Пульсация на доступной карточке — лёгкая через opacity, без box-shadow */
+/* Доступная карточка — яркий бордер + мягкое свечение */
 body.theme-pickle .day-card.available .card-front {
-    border-color: rgba(57, 255, 20, 0.5);
-    animation: pickleGlow 2s ease-in-out infinite;
-}
-
-@keyframes pickleGlow {
-    0%, 100% { opacity: 0.85; }
-    50% { opacity: 1; }
+    border-color: rgba(57, 255, 20, 0.8);
+    border-width: 2px;
+    box-shadow: 0 0 12px rgba(57, 255, 20, 0.3), 0 0 30px rgba(57, 255, 20, 0.12);
 }
 
 /* Скругление карточек чуть меньше + отключаем тяжёлый backdrop-filter */
@@ -1276,7 +1280,7 @@ body.theme-pickle .debug-menu-btn {
 }
 
 body.theme-pickle .user-name {
-    font-family: 'Bangers', cursive;
+    font-family: 'Russo One', sans-serif;
     letter-spacing: 2px;
 }
 
