@@ -343,7 +343,8 @@ function showGameModal(gameId) {
             coin: typeof startCoinGame !== 'undefined' ? startCoinGame : null,
             flappy: typeof startFlappyGame !== 'undefined' ? startFlappyGame : null,
             day3hacker: typeof startDay3HackerGame !== 'undefined' ? startDay3HackerGame : null,
-            roulette: typeof startRouletteGame !== 'undefined' ? startRouletteGame : null
+            roulette: typeof startRouletteGame !== 'undefined' ? startRouletteGame : null,
+            invaders: typeof startInvadersGame !== 'undefined' ? startInvadersGame : null
         };
         const gameFn = games[gameId];
         if (!gameFn) { resolve('win'); return; }

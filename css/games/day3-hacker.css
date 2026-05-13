@@ -156,15 +156,15 @@
     align-items: center;
     gap: 16px;
     width: 100%;
-    max-width: 500px;
+    max-width: 600px;
     opacity: 0;
     animation: hackerBtnIn 0.5s forwards;
 }
 
 .hack-map {
     position: relative;
-    width: 370px;
-    height: 230px;
+    width: 560px;
+    height: 380px;
     margin: 0 auto;
 }
 
@@ -180,28 +180,30 @@
 /* Nodes */
 .hack-node {
     position: absolute;
-    width: 20px;
-    height: 20px;
+    width: 56px;
+    height: 56px;
     border: 2px solid rgba(57, 255, 20, 0.5);
-    border-radius: 4px;
+    border-radius: 8px;
     background: rgba(57, 255, 20, 0.08);
     box-shadow: 0 0 8px rgba(57, 255, 20, 0.15);
     transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
+    margin-left: -18px;
+    margin-top: -18px;
 }
 .hack-node-server {
-    width: 28px;
-    height: 28px;
-    margin-left: -4px;
-    margin-top: -4px;
+    width: 72px;
+    height: 72px;
+    margin-left: -26px;
+    margin-top: -26px;
     border-color: rgba(57, 255, 20, 0.7);
     animation: serverPulse 2s infinite;
 }
 .hack-node-terminal {
-    width: 40px;
-    height: 40px;
-    margin-left: -10px;
-    margin-top: -10px;
-    border-radius: 6px;
+    width: 88px;
+    height: 88px;
+    margin-left: -34px;
+    margin-top: -34px;
+    border-radius: 10px;
     border-color: #39ff14;
     background: rgba(57, 255, 20, 0.12);
     box-shadow: 0 0 20px rgba(57, 255, 20, 0.25);
@@ -228,30 +230,31 @@
 
 .hack-node-label {
     position: absolute;
-    top: -18px;
+    top: -22px;
     left: 50%;
     transform: translateX(-50%);
     font-family: 'Courier New', monospace;
-    font-size: 10px;
-    color: rgba(57, 255, 20, 0.6);
+    font-size: 13px;
+    color: rgba(57, 255, 20, 0.7);
     white-space: nowrap;
 }
 .hack-node-terminal .hack-node-label {
-    font-size: 12px;
-    top: -20px;
+    font-size: 14px;
+    top: -24px;
     color: #39ff14;
 }
 
 /* Player */
 .hack-player {
     position: absolute;
-    width: 20px;
-    height: 20px;
-    font-size: 18px;
-    line-height: 20px;
-    text-align: center;
+    width: 73px;
+    height: 95px;
+    object-fit: contain;
     z-index: 3;
-    filter: drop-shadow(0 0 6px rgba(57, 255, 20, 0.5));
+    margin-left: -28px;
+    margin-top: -47px;
+    filter: drop-shadow(0 0 8px rgba(57, 255, 20, 0.5));
+    pointer-events: none;
 }
 
 /* Status text */
@@ -290,10 +293,10 @@
 }
 .hack-pw-collected {
     font-family: 'Courier New', monospace;
-    font-size: 14px;
+    font-size: 22px;
     color: rgba(57, 255, 20, 0.8);
     background: rgba(57, 255, 20, 0.08);
-    padding: 4px 10px;
+    padding: 8px 16px;
     border-radius: 4px;
     border: 1px solid rgba(57, 255, 20, 0.25);
 }
@@ -303,19 +306,19 @@
     display: flex;
     gap: 8px;
     justify-content: center;
-    min-height: 36px;
+    min-height: 64px;
     align-items: center;
 }
 .hack-input-char {
     font-family: 'Courier New', monospace;
-    font-size: 22px;
+    font-size: 32px;
     color: rgba(57, 255, 20, 0.3);
-    width: 32px;
-    height: 32px;
-    line-height: 32px;
+    width: 64px;
+    height: 64px;
+    line-height: 64px;
     text-align: center;
-    border: 1px solid rgba(57, 255, 20, 0.2);
-    border-radius: 4px;
+    border: 2px solid rgba(57, 255, 20, 0.2);
+    border-radius: 10px;
 }
 .hack-input-char.filled {
     color: #39ff14;
@@ -330,42 +333,62 @@
     grid-template-areas:
         '. up .'
         'left down right';
-    grid-template-columns: 56px 56px 56px;
-    grid-template-rows: 56px 56px;
+    grid-template-columns: 64px 64px 64px;
+    grid-template-rows: 64px 64px;
     gap: 6px;
     justify-content: center;
 }
 .hack-arrow-btn {
-    width: 56px;
-    height: 56px;
-    font-size: 24px;
-    font-family: 'Courier New', monospace;
-    border: 1px solid rgba(57, 255, 20, 0.4);
+    width: 64px;
+    height: 64px;
+    font-size: 0;
+    border: 2px solid rgba(57, 255, 20, 0.5);
     background: rgba(57, 255, 20, 0.06);
     color: #39ff14;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
     transition: background 0.15s, box-shadow 0.15s;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.hack-arrow-btn::after {
+    content: '';
+    display: block;
+    width: 20px;
+    height: 20px;
+    border-top: 3px solid #39ff14;
+    border-right: 3px solid #39ff14;
+    filter: drop-shadow(0 0 4px rgba(57, 255, 20, 0.5));
+}
+.hack-arrow-btn[style*="up"]::after {
+    transform: rotate(-45deg) translateY(4px);
+}
+.hack-arrow-btn[style*="down"]::after {
+    transform: rotate(135deg) translateY(4px);
+}
+.hack-arrow-btn[style*="left"]::after {
+    transform: rotate(-135deg) translateX(4px);
+}
+.hack-arrow-btn[style*="right"]::after {
+    transform: rotate(45deg) translateX(-4px);
 }
 .hack-arrow-btn:hover {
     background: rgba(57, 255, 20, 0.15);
-    box-shadow: 0 0 12px rgba(57, 255, 20, 0.2);
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.3);
 }
 .hack-arrow-btn:active {
     background: rgba(57, 255, 20, 0.25);
 }
 
-/* Explosions */
-.hack-explosion {
-    position: absolute;
-    z-index: 10;
-    animation: explode 1s forwards;
-    pointer-events: none;
-}
-@keyframes explode {
-    0% { transform: scale(0.5); opacity: 1; }
-    50% { transform: scale(1.8); opacity: 1; }
-    100% { transform: scale(2.5); opacity: 0; }
+/* Hint text */
+.hack-hint {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: rgba(57, 255, 20, 0.8);
+    text-align: center;
+    margin-top: 8px;
+    text-shadow: 0 0 6px rgba(57, 255, 20, 0.3);
 }

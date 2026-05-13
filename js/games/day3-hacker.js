@@ -234,17 +234,17 @@ function startDay3HackerGame(container, { onResult }) {
 function startHackingMinigame(center, overlay, matrixCanvas, onComplete) {
     center.innerHTML = '';
 
-    // Map definition
-    // Nodes: id, x, y (grid units), type
+    var CELL = 80;
+
     var NODES = [
         { id: 'start',   x: 6, y: 2, type: 'node' },
         { id: 'n1',      x: 5, y: 2, type: 'node' },
         { id: 'branch1', x: 4, y: 2, type: 'node' },
-        { id: 'server1', x: 4, y: 0.5, type: 'server', password: ['up', 'down', 'left'], label: 'SRV-01' },
+        { id: 'server1', x: 4, y: 0.5, type: 'server', password: ['up', 'down', 'left'], label: 'Вирус 1' },
         { id: 'n2',      x: 3, y: 2, type: 'node' },
         { id: 'branch2', x: 2, y: 2, type: 'node' },
-        { id: 'server2', x: 2, y: 3.5, type: 'server', password: ['right', 'up', 'left'], label: 'SRV-02' },
-        { id: 'terminal',x: 0.5, y: 2, type: 'terminal', label: 'MAIN' }
+        { id: 'server2', x: 2, y: 3.5, type: 'server', password: ['right', 'up', 'left'], label: 'Вирус 2' },
+        { id: 'terminal',x: 0.3, y: 2, type: 'terminal', label: 'Мой компьютер' }
     ];
 
     var EDGES = [
@@ -291,7 +291,7 @@ function startHackingMinigame(center, overlay, matrixCanvas, onComplete) {
         return dy < 0 ? 'up' : 'down';
     }
 
-    // Build the map UI
+    // Build UI
     var mapWrap = document.createElement('div');
     mapWrap.className = 'hack-map-wrap';
     center.appendChild(mapWrap);
@@ -300,13 +300,13 @@ function startHackingMinigame(center, overlay, matrixCanvas, onComplete) {
     mapArea.className = 'hack-map';
     mapWrap.appendChild(mapArea);
 
-    // Status text
+    // Status
     var statusEl = document.createElement('div');
     statusEl.className = 'hack-status';
-    statusEl.textContent = 'Navigate to servers to collect the password';
+    statusEl.textContent = 'Двигайся к вирусам, чтобы собрать пароль';
     mapWrap.appendChild(statusEl);
 
-    // Password display
+    // Password display (hidden by default, shown only on server nodes)
     var passwordDisplay = document.createElement('div');
     passwordDisplay.className = 'hack-password-display';
     mapWrap.appendChild(passwordDisplay);
@@ -336,13 +336,18 @@ function startHackingMinigame(center, overlay, matrixCanvas, onComplete) {
     });
     mapWrap.appendChild(controls);
 
-    // Draw edges (lines)
+    // Controls hint
+    var hint = document.createElement('div');
+    hint.className = 'hack-hint';
+    hint.textContent = 'Используй стрелки или кнопки для перемещения';
+    mapWrap.appendChild(hint);
+
+    // Draw edges
     EDGES.forEach(function (edge) {
         var a = getNode(edge[0]);
         var b = getNode(edge[1]);
         var line = document.createElement('div');
         line.className = 'hack-edge';
-        var CELL = 52;
         var x1 = a.x * CELL, y1 = a.y * CELL;
         var x2 = b.x * CELL, y2 = b.y * CELL;
         var len = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
@@ -358,7 +363,6 @@ function startHackingMinigame(center, overlay, matrixCanvas, onComplete) {
     var nodeEls = {};
     NODES.forEach(function (n) {
         var el = document.createElement('div');
-        var CELL = 52;
         el.className = 'hack-node hack-node-' + n.type;
         el.style.left = (n.x * CELL) + 'px';
         el.style.top = (n.y * CELL) + 'px';
@@ -372,39 +376,33 @@ function startHackingMinigame(center, overlay, matrixCanvas, onComplete) {
         nodeEls[n.id] = el;
     });
 
-    // Player element
-    var playerEl = document.createElement('div');
+    // Player
+    var playerEl = document.createElement('img');
     playerEl.className = 'hack-player';
-    playerEl.textContent = '🤖';
+    playerEl.src = 'img/hacker-player.png';
+    playerEl.alt = '';
+    playerEl.draggable = false;
     mapArea.appendChild(playerEl);
 
     function updatePlayerPos(animate) {
         var n = getNode(currentNodeId);
-        var CELL = 52;
         var x = n.x * CELL;
         var y = n.y * CELL;
-        if (animate) {
-            playerEl.style.transition = 'left 0.3s, top 0.3s';
-        } else {
-            playerEl.style.transition = 'none';
-        }
+        playerEl.style.transition = animate ? 'left 0.3s, top 0.3s' : 'none';
         playerEl.style.left = x + 'px';
         playerEl.style.top = y + 'px';
     }
 
     function updatePasswordDisplay() {
-        var parts = [];
-        if (collectedPasswords['server1']) {
-            parts.push('<span class="hack-pw-collected">SRV-01: ' +
-                collectedPasswords['server1'].map(function (d) { return ARROW_SYMBOLS[d]; }).join(' ') +
-                '</span>');
+        // Only show fragments when standing on the server node
+        var node = getNode(currentNodeId);
+        if (node.type === 'server' && collectedPasswords[node.id]) {
+            var pw = collectedPasswords[node.id].map(function (d) { return ARROW_SYMBOLS[d]; }).join('  ');
+            passwordDisplay.innerHTML = '<span class="hack-pw-collected">' + node.label + ': ' + pw + '</span>';
+            passwordDisplay.style.opacity = '1';
+        } else {
+            passwordDisplay.style.opacity = '0';
         }
-        if (collectedPasswords['server2']) {
-            parts.push('<span class="hack-pw-collected">SRV-02: ' +
-                collectedPasswords['server2'].map(function (d) { return ARROW_SYMBOLS[d]; }).join(' ') +
-                '</span>');
-        }
-        passwordDisplay.innerHTML = parts.join('');
     }
 
     function updateNodeStyles() {
@@ -418,26 +416,26 @@ function startHackingMinigame(center, overlay, matrixCanvas, onComplete) {
     function showServerModal(node) {
         inputMode = true;
         var pw = node.password.map(function (d) { return ARROW_SYMBOLS[d]; }).join('  ');
-        statusEl.innerHTML = '<span class="hack-flash">' + node.label + ' — Memorize: ' + pw + '</span>';
+        statusEl.innerHTML = '<span class="hack-flash">' + node.label + ' — Запомни: ' + pw + '</span>';
 
         setTimeout(function () {
             collectedPasswords[node.id] = node.password.slice();
             updatePasswordDisplay();
-            statusEl.textContent = 'Password fragment collected! Go back.';
+            statusEl.textContent = 'Фрагмент пароля получен! Возвращайся.';
             inputMode = false;
         }, 2500);
     }
 
     function startTerminalInput() {
         if (!collectedPasswords['server1'] || !collectedPasswords['server2']) {
-            statusEl.textContent = 'Collect passwords from both servers first!';
+            statusEl.textContent = 'Сначала собери пароли с обоих вирусов!';
             return;
         }
         inputMode = true;
         expectedSequence = FULL_PASSWORD.slice();
         inputSequence = [];
         inputDisplay.innerHTML = '';
-        statusEl.innerHTML = '<span class="hack-flash">ENTER FULL PASSWORD</span>';
+        statusEl.innerHTML = '<span class="hack-flash">ВВЕДИ ПОЛНЫЙ ПАРОЛЬ</span>';
         updateInputDisplay();
     }
 
@@ -455,7 +453,6 @@ function startHackingMinigame(center, overlay, matrixCanvas, onComplete) {
 
     function handleInput(dir) {
         if (inputMode && expectedSequence) {
-            // Terminal password input
             inputSequence.push(dir);
             updateInputDisplay();
 
@@ -487,14 +484,17 @@ function startHackingMinigame(center, overlay, matrixCanvas, onComplete) {
         currentNodeId = target;
         updatePlayerPos(true);
         updateNodeStyles();
+        updatePasswordDisplay();
 
         var node = getNode(target);
         if (node.type === 'server' && !collectedPasswords[node.id]) {
             showServerModal(node);
         } else if (node.type === 'terminal') {
             startTerminalInput();
+        } else if (node.type === 'server' && collectedPasswords[node.id]) {
+            statusEl.textContent = 'Фрагмент уже собран. Вернись на стрелку вниз.';
         } else {
-            statusEl.textContent = 'Navigate to servers to collect the password';
+            statusEl.textContent = 'Двигайся к вирусам, чтобы собрать пароль';
         }
     }
 
@@ -502,7 +502,7 @@ function startHackingMinigame(center, overlay, matrixCanvas, onComplete) {
         inputMode = false;
         expectedSequence = null;
         inputSequence = [];
-        statusEl.innerHTML = '<span class="hack-error">ACCESS DENIED — Restarting...</span>';
+        statusEl.innerHTML = '<span class="hack-error">ДОСТУП ЗАПРЕЩЁН — Перезапуск...</span>';
         inputDisplay.innerHTML = '';
 
         setTimeout(function () {
@@ -511,41 +511,90 @@ function startHackingMinigame(center, overlay, matrixCanvas, onComplete) {
             updatePlayerPos(false);
             updateNodeStyles();
             updatePasswordDisplay();
-            statusEl.textContent = 'Navigate to servers to collect the password';
+            statusEl.textContent = 'Двигайся к вирусам, чтобы собрать пароль';
         }, 1500);
     }
 
     function winSequence() {
         inputMode = true;
-        statusEl.innerHTML = '<span class="hack-success">ACCESS GRANTED — VIRUSES DELETED</span>';
+        statusEl.innerHTML = '<span class="hack-success">ДОСТУП РАЗРЕШЁН — ВИРУСЫ УДАЛЕНЫ</span>';
         inputDisplay.innerHTML = '';
 
-        // Explosions
-        for (var i = 0; i < 8; i++) {
-            (function (idx) {
-                setTimeout(function () {
-                    spawnExplosion(mapWrap, idx);
-                }, idx * 200);
-            })(i);
+        // Canvas explosions
+        var expCanvas = document.createElement('canvas');
+        expCanvas.className = 'hack-explosion-canvas';
+        expCanvas.style.position = 'absolute';
+        expCanvas.style.inset = '0';
+        expCanvas.style.width = '100%';
+        expCanvas.style.height = '100%';
+        expCanvas.style.zIndex = '10';
+        expCanvas.style.pointerEvents = 'none';
+        mapWrap.style.position = 'relative';
+        mapWrap.appendChild(expCanvas);
+
+        var ectx = expCanvas.getContext('2d');
+        var dpr = window.devicePixelRatio || 1;
+        expCanvas.width = Math.floor(mapWrap.offsetWidth * dpr);
+        expCanvas.height = Math.floor(mapWrap.offsetHeight * dpr);
+        ectx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        var ew = mapWrap.offsetWidth;
+        var eh = mapWrap.offsetHeight;
+
+        var particles = [];
+        var colors = ['#39ff14', '#ff4444', '#ffaa00', '#ffffff', '#00ffff', '#ff00ff'];
+
+        function spawnBurst(cx, cy) {
+            for (var j = 0; j < 30; j++) {
+                var angle = Math.random() * Math.PI * 2;
+                var speed = 2 + Math.random() * 5;
+                particles.push({
+                    x: cx, y: cy,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    life: 1,
+                    decay: 0.015 + Math.random() * 0.02,
+                    size: 3 + Math.random() * 5,
+                    color: colors[Math.floor(Math.random() * colors.length)]
+                });
+            }
         }
+
+        // Spawn bursts over time
+        var burstCount = 0;
+        var burstInterval = setInterval(function () {
+            spawnBurst(ew * 0.15 + Math.random() * ew * 0.7, eh * 0.1 + Math.random() * eh * 0.6);
+            burstCount++;
+            if (burstCount >= 10) clearInterval(burstInterval);
+        }, 180);
+
+        function animateExplosions() {
+            ectx.clearRect(0, 0, ew, eh);
+            for (var i = particles.length - 1; i >= 0; i--) {
+                var p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.1;
+                p.life -= p.decay;
+                if (p.life <= 0) { particles.splice(i, 1); continue; }
+                ectx.globalAlpha = p.life;
+                ectx.fillStyle = p.color;
+                ectx.beginPath();
+                ectx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+                ectx.fill();
+            }
+            ectx.globalAlpha = 1;
+            if (particles.length > 0 || burstCount < 10) {
+                requestAnimationFrame(animateExplosions);
+            }
+        }
+        animateExplosions();
 
         setTimeout(function () {
             onComplete();
-        }, 2500);
+        }, 2800);
     }
 
-    function spawnExplosion(container, idx) {
-        var exp = document.createElement('div');
-        exp.className = 'hack-explosion';
-        exp.textContent = ['💥', '🔥', '✨', '💣', '🎆', '⚡', '💥', '🔥'][idx % 8];
-        exp.style.left = (15 + Math.random() * 70) + '%';
-        exp.style.top = (10 + Math.random() * 60) + '%';
-        exp.style.fontSize = (30 + Math.random() * 30) + 'px';
-        container.appendChild(exp);
-        setTimeout(function () { exp.remove(); }, 1000);
-    }
-
-    // Keyboard support
+    // Keyboard
     function keyHandler(e) {
         var map = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right' };
         if (map[e.key]) {
@@ -555,7 +604,6 @@ function startHackingMinigame(center, overlay, matrixCanvas, onComplete) {
     }
     document.addEventListener('keydown', keyHandler);
 
-    // Store cleanup ref on overlay so parent can remove if needed
     var origCleanup = overlay._hackCleanup;
     overlay._hackCleanup = function () {
         document.removeEventListener('keydown', keyHandler);

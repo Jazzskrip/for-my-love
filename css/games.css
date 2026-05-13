@@ -337,3 +337,75 @@ body.video-open .video-overlay {
     opacity: 0.5;
     pointer-events: none;
 }
+
+/* === Space Invaders === */
+.game-card:has(.invaders-game) {
+    padding: 16px 8px;
+}
+
+.invaders-game {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.invaders-canvas {
+    border-radius: 16px;
+    display: block;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: none;
+    user-select: none;
+}
+
+.invaders-score {
+    font-family: 'Nunito', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: #5a9e8f;
+    margin-top: 14px;
+}
+
+.invaders-msg {
+    margin-top: 12px;
+    min-height: 44px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.invaders-msg-visible {
+    opacity: 1;
+}
+.invaders-msg-win {
+    font-family: 'Nunito', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: #c47085;
+}
+
+.invaders-retry-btn {
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 12px 28px;
+    border-radius: 14px;
+    border: 1.5px solid rgba(200, 150, 170, 0.5);
+    background: linear-gradient(135deg, #fff5f7, #ffe8ee);
+    color: #6b3a4a;
+    cursor: pointer;
+    margin-top: 12px;
+    transition: transform 0.15s;
+}
+.invaders-retry-btn:hover {
+    transform: translateY(-2px);
+}
+.invaders-retry-btn:active {
+    transform: translateY(0);
+}
+
+.invaders-hint {
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    color: rgba(100, 110, 130, 0.7);
+    margin-top: 8px;
+}
