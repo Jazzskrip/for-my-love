@@ -147,3 +147,225 @@
 .hacker-btn:active {
     background: rgba(57, 255, 20, 0.15);
 }
+
+/* === Hacking Minigame === */
+
+.hack-map-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    max-width: 500px;
+    opacity: 0;
+    animation: hackerBtnIn 0.5s forwards;
+}
+
+.hack-map {
+    position: relative;
+    width: 370px;
+    height: 230px;
+    margin: 0 auto;
+}
+
+/* Edges (lines between nodes) */
+.hack-edge {
+    position: absolute;
+    height: 2px;
+    background: rgba(57, 255, 20, 0.3);
+    transform-origin: 0 50%;
+    box-shadow: 0 0 6px rgba(57, 255, 20, 0.15);
+}
+
+/* Nodes */
+.hack-node {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(57, 255, 20, 0.5);
+    border-radius: 4px;
+    background: rgba(57, 255, 20, 0.08);
+    box-shadow: 0 0 8px rgba(57, 255, 20, 0.15);
+    transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
+}
+.hack-node-server {
+    width: 28px;
+    height: 28px;
+    margin-left: -4px;
+    margin-top: -4px;
+    border-color: rgba(57, 255, 20, 0.7);
+    animation: serverPulse 2s infinite;
+}
+.hack-node-terminal {
+    width: 40px;
+    height: 40px;
+    margin-left: -10px;
+    margin-top: -10px;
+    border-radius: 6px;
+    border-color: #39ff14;
+    background: rgba(57, 255, 20, 0.12);
+    box-shadow: 0 0 20px rgba(57, 255, 20, 0.25);
+    animation: terminalPulse 1.5s infinite;
+}
+.hack-node-visited {
+    border-color: rgba(57, 255, 20, 0.3);
+    background: rgba(57, 255, 20, 0.2);
+    animation: none;
+}
+.hack-node-current {
+    border-color: #39ff14;
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.4);
+}
+
+@keyframes serverPulse {
+    0%, 100% { box-shadow: 0 0 8px rgba(57, 255, 20, 0.15); }
+    50% { box-shadow: 0 0 18px rgba(57, 255, 20, 0.35); }
+}
+@keyframes terminalPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(57, 255, 20, 0.25); }
+    50% { box-shadow: 0 0 35px rgba(57, 255, 20, 0.5); }
+}
+
+.hack-node-label {
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    color: rgba(57, 255, 20, 0.6);
+    white-space: nowrap;
+}
+.hack-node-terminal .hack-node-label {
+    font-size: 12px;
+    top: -20px;
+    color: #39ff14;
+}
+
+/* Player */
+.hack-player {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    font-size: 18px;
+    line-height: 20px;
+    text-align: center;
+    z-index: 3;
+    filter: drop-shadow(0 0 6px rgba(57, 255, 20, 0.5));
+}
+
+/* Status text */
+.hack-status {
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: rgba(57, 255, 20, 0.7);
+    text-align: center;
+    min-height: 20px;
+    text-shadow: 0 0 6px rgba(57, 255, 20, 0.3);
+}
+.hack-flash {
+    animation: hackFlash 0.5s ease 2;
+}
+@keyframes hackFlash {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+.hack-error {
+    color: #ff4444;
+    text-shadow: 0 0 8px rgba(255, 0, 0, 0.4);
+}
+.hack-success {
+    color: #39ff14;
+    font-size: 16px;
+    font-weight: bold;
+    text-shadow: 0 0 12px rgba(57, 255, 20, 0.6);
+}
+
+/* Password display */
+.hack-password-display {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    min-height: 22px;
+}
+.hack-pw-collected {
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    color: rgba(57, 255, 20, 0.8);
+    background: rgba(57, 255, 20, 0.08);
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid rgba(57, 255, 20, 0.25);
+}
+
+/* Input display */
+.hack-input-display {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    min-height: 36px;
+    align-items: center;
+}
+.hack-input-char {
+    font-family: 'Courier New', monospace;
+    font-size: 22px;
+    color: rgba(57, 255, 20, 0.3);
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    border: 1px solid rgba(57, 255, 20, 0.2);
+    border-radius: 4px;
+}
+.hack-input-char.filled {
+    color: #39ff14;
+    border-color: rgba(57, 255, 20, 0.5);
+    background: rgba(57, 255, 20, 0.1);
+    text-shadow: 0 0 8px rgba(57, 255, 20, 0.5);
+}
+
+/* Arrow controls */
+.hack-controls {
+    display: grid;
+    grid-template-areas:
+        '. up .'
+        'left down right';
+    grid-template-columns: 56px 56px 56px;
+    grid-template-rows: 56px 56px;
+    gap: 6px;
+    justify-content: center;
+}
+.hack-arrow-btn {
+    width: 56px;
+    height: 56px;
+    font-size: 24px;
+    font-family: 'Courier New', monospace;
+    border: 1px solid rgba(57, 255, 20, 0.4);
+    background: rgba(57, 255, 20, 0.06);
+    color: #39ff14;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s, box-shadow 0.15s;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+.hack-arrow-btn:hover {
+    background: rgba(57, 255, 20, 0.15);
+    box-shadow: 0 0 12px rgba(57, 255, 20, 0.2);
+}
+.hack-arrow-btn:active {
+    background: rgba(57, 255, 20, 0.25);
+}
+
+/* Explosions */
+.hack-explosion {
+    position: absolute;
+    z-index: 10;
+    animation: explode 1s forwards;
+    pointer-events: none;
+}
+@keyframes explode {
+    0% { transform: scale(0.5); opacity: 1; }
+    50% { transform: scale(1.8); opacity: 1; }
+    100% { transform: scale(2.5); opacity: 0; }
+}

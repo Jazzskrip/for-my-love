@@ -130,8 +130,11 @@ function startRouletteGame(container, { onResult }) {
     }
 
     function getTargetAngle(sectorIndex) {
-        var sectorMiddle = sectorIndex * SECTOR_ANGLE + SECTOR_ANGLE / 2;
-        var base = Math.PI / 2 + sectorMiddle;
+        // Случайная точка внутри сектора, но с отступом 20% от краёв
+        var margin = SECTOR_ANGLE * 0.2;
+        var randomOffset = margin + Math.random() * (SECTOR_ANGLE - margin * 2);
+        var sectorPoint = sectorIndex * SECTOR_ANGLE + randomOffset;
+        var base = Math.PI / 2 + sectorPoint;
         var fullSpins = (4 + Math.floor(Math.random() * 3)) * Math.PI * 2;
         return fullSpins + base;
     }
