@@ -37,14 +37,17 @@
                 <div class="debug-menu-wrap">
                     <button class="debug-menu-btn" id="debugMenuBtn" type="button" aria-label="Debug menu">&#9660;</button>
                     <select class="debug-menu-select" id="debugMenuSelect">
-                        <option value="" disabled selected>Палитра...</option>
-                        <option value="rose">Розовая</option>
-                        <option value="lavender">Лавандовая</option>
-                        <option value="mint">Мятная</option>
+                        <option value="" disabled selected>Debug...</option>
+                        <optgroup label="Палитра">
+                            <option value="rose">Розовая</option>
+                            <option value="lavender">Лавандовая</option>
+                            <option value="mint">Мятная</option>
+                        </optgroup>
+                        <optgroup label="Данные">
+                            <option value="__reset">Сброс прогресса</option>
+                        </optgroup>
                     </select>
                 </div>
-                <!-- DEBUG: кнопка сброса прогресса -->
-                <button class="debug-reset-btn" id="debugResetBtn" type="button">Сброс</button>
                 <!-- /DEBUG MENU -->
             </div>
             <h1 id="pageTitle">Адвент-календарь</h1>
@@ -718,20 +721,20 @@
 
             debugSelect.addEventListener('change', () => {
                 const chosen = debugSelect.value;
+
+                // Debug: сброс прогресса
+                if (chosen === '__reset') {
+                    debugSelect.value = '';
+                    if (confirm('Сбросить весь прогресс? Все открытые дни и купоны будут потеряны.')) {
+                        localStorage.removeItem('adventProgress');
+                        location.reload();
+                    }
+                    return;
+                }
+
                 if (chosen && DEBUG_PALETTES[chosen]) {
                     applyPalette(chosen);
                     localStorage.setItem('debugPalette', chosen);
-                }
-            });
-        }
-
-        // Debug: сброс прогресса (очищает localStorage и перезагружает страницу)
-        const debugResetBtn = document.getElementById('debugResetBtn');
-        if (debugResetBtn) {
-            debugResetBtn.addEventListener('click', () => {
-                if (confirm('Сбросить весь прогресс? Все открытые дни и купоны будут потеряны.')) {
-                    localStorage.removeItem('adventProgress');
-                    location.reload();
                 }
             });
         }

@@ -218,25 +218,6 @@
     cursor: pointer;
     font-size: 16px; /* prevents iOS zoom on focus */
 }
-/* DEBUG: кнопка сброса прогресса */
-.debug-reset-btn {
-    border: 1px solid rgba(220, 80, 80, 0.4);
-    background: rgba(255, 240, 240, 0.8);
-    color: #c45050;
-    padding: 6px 12px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 0.8rem;
-    font-weight: 600;
-    font-family: 'Mulish', 'Nunito', sans-serif;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    width: 100%;
-}
-
-.debug-reset-btn:hover {
-    border-color: rgba(220, 80, 80, 0.7);
-    box-shadow: 0 4px 15px rgba(220, 80, 80, 0.15);
-}
 /* --- /DEBUG MENU --- */
 
 .user-coupons-btn:hover {
