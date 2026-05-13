@@ -21,11 +21,13 @@ function startFlappyGame(container, { onResult }) {
 
     container.appendChild(wrapper);
 
-    // Загружаем картинку птички
+    // Картинки
     var birdImg = new Image();
     birdImg.src = 'img/flappy-bird.png';
+    var burgerImg = new Image();
+    burgerImg.src = 'img/flappy-burger.png';
 
-    // Размеры canvas — занимает большую часть экрана
+    // Размеры canvas
     var maxH = window.innerHeight - 160;
     var W = Math.min(container.clientWidth - 16, 500);
     var H = Math.min(Math.round(W * 1.5), maxH);
@@ -37,7 +39,8 @@ function startFlappyGame(container, { onResult }) {
     var ctx = canvas.getContext('2d');
     ctx.scale(dpr, dpr);
 
-    // Игровые константы
+    // Константы (нормализованы под 60fps, dt=1.0)
+    var TARGET_DT = 1000 / 60;
     var GRAVITY = 0.35;
     var JUMP = -6;
     var PIPE_WIDTH = 48;
@@ -45,9 +48,16 @@ function startFlappyGame(container, { onResult }) {
     var PIPE_SPEED = 2.2;
     var BIRD_SIZE = 24;
     var PIPES_TO_WIN = 5;
+    var PIPE_SPACING = 240;
+    var BIRD_IMG_W = 48;
+    var BIRD_IMG_H = 104;
+    var BURGER_W = 480;
+    var BURGER_H = 360;
 
     // Состояние
-    var bird, pipes, score, gameOver, gameWon, started, animId;
+    var bird, pipes, score, gameOver, gameWon, started, animId, lastTime;
+    var burgerPhase; // false = не показан, true = бургер на экране
+    var burgerX;
 
     function reset() {
         bird = { x: W * 0.25, y: H * 0.4, vy: 0, rotation: 0 };
@@ -56,27 +66,34 @@ function startFlappyGame(container, { onResult }) {
         gameOver = false;
         gameWon = false;
         started = false;
+        lastTime = 0;
+        burgerPhase = false;
+        burgerX = -1;
         scoreEl.textContent = '0 / ' + PIPES_TO_WIN;
         msgEl.innerHTML = '';
         msgEl.className = 'flappy-msg';
-    }
 
-    function spawnPipe() {
-        var minTop = 60;
-        var maxTop = H - PIPE_GAP - 60;
-        var topH = minTop + Math.random() * (maxTop - minTop);
-        pipes.push({
-            x: W + 10,
-            topH: topH,
-            scored: false
-        });
+        // Создаём ровно 5 труб заранее
+        for (var i = 0; i < PIPES_TO_WIN; i++) {
+            var minTop = 60;
+            var maxTop = H - PIPE_GAP - 60;
+            var topH = minTop + Math.random() * (maxTop - minTop);
+            pipes.push({
+                x: W + 80 + i * PIPE_SPACING,
+                topH: topH,
+                scored: false
+            });
+        }
+
+        // Бургер появится за последней трубой
+        var lastPipe = pipes[pipes.length - 1];
+        burgerX = lastPipe.x + PIPE_SPACING;
+        BURGER_SURFACE_Y = H - BURGER_H + BURGER_SURFACE_OFFSET;
     }
 
     function jump() {
         if (gameOver || gameWon) return;
-        if (!started) {
-            started = true;
-        }
+        if (!started) started = true;
         bird.vy = JUMP;
     }
 
@@ -84,113 +101,126 @@ function startFlappyGame(container, { onResult }) {
         var bx = bird.x;
         var by = bird.y;
         var r = BIRD_SIZE / 2;
-
-        // Горизонтальное пересечение
         if (bx + r > pipe.x && bx - r < pipe.x + PIPE_WIDTH) {
-            // Верхняя труба
             if (by - r < pipe.topH) return true;
-            // Нижняя труба
             if (by + r > pipe.topH + PIPE_GAP) return true;
         }
         return false;
     }
 
-    function update() {
+    // Поверхность бургера — тонкая платформа
+    // Картинка 480x360, ~30% сверху прозрачные, булка начинается ≈ на 30% от верха
+    var BURGER_SURFACE_OFFSET = Math.round(BURGER_H * 0.45);
+    var BURGER_SURFACE_Y = 0; // вычислится в reset()
+
+    function isBirdOverBurger() {
+        var hitLeft = burgerX + 30;
+        var hitRight = burgerX + BURGER_W - 30;
+        return bird.x > hitLeft && bird.x < hitRight;
+    }
+
+    function update(dt) {
         if (!started || gameOver || gameWon) return;
 
-        // Физика птички
-        bird.vy += GRAVITY;
-        bird.y += bird.vy;
+        bird.vy += GRAVITY * dt;
+        bird.y += bird.vy * dt;
         bird.rotation = Math.min(bird.vy * 3, 45);
 
-        // Пол / потолок
-        if (bird.y + BIRD_SIZE / 2 > H) {
-            bird.y = H - BIRD_SIZE / 2;
-            die();
-            return;
-        }
+        // Потолок
         if (bird.y - BIRD_SIZE / 2 < 0) {
             bird.y = BIRD_SIZE / 2;
             bird.vy = 0;
         }
 
-        // Спавн труб
-        var lastPipe = pipes[pipes.length - 1];
-        if (!lastPipe || lastPipe.x < W - 240) {
-            spawnPipe();
+        // Проверяем: все трубы пройдены?
+        var allScored = score >= PIPES_TO_WIN;
+
+        if (allScored) {
+            burgerPhase = true;
         }
 
-        // Двигаем трубы
-        for (var i = pipes.length - 1; i >= 0; i--) {
-            pipes[i].x -= PIPE_SPEED;
+        // Бургер как платформа — птичка приземляется на поверхность булки
+        if (burgerPhase && bird.vy > 0 && isBirdOverBurger()) {
+            var birdBottom = bird.y + BIRD_IMG_H / 2;
+            if (birdBottom >= BURGER_SURFACE_Y) {
+                bird.y = BURGER_SURFACE_Y - BIRD_IMG_H / 2;
+                bird.vy = 0;
+                win();
+                return;
+            }
+        }
 
-            // Проверка коллизии
+        // Пол = смерть
+        if (bird.y + BIRD_SIZE / 2 > H) {
+            bird.y = H - BIRD_SIZE / 2;
+            die();
+            return;
+        }
+
+        // Двигаем трубы и бургер
+        var pipeMove = PIPE_SPEED * dt;
+        burgerX -= pipeMove;
+
+        for (var i = pipes.length - 1; i >= 0; i--) {
+            pipes[i].x -= pipeMove;
+
             if (checkCollision(pipes[i])) {
                 die();
                 return;
             }
 
-            // Подсчёт очков
             if (!pipes[i].scored && pipes[i].x + PIPE_WIDTH < bird.x) {
                 pipes[i].scored = true;
                 score++;
                 scoreEl.textContent = score + ' / ' + PIPES_TO_WIN;
-
-                if (score >= PIPES_TO_WIN) {
-                    win();
-                    return;
-                }
             }
 
-            // Убираем за экраном
             if (pipes[i].x + PIPE_WIDTH < -10) {
                 pipes.splice(i, 1);
             }
         }
     }
 
-    var BIRD_IMG_W = 48;
-    var BIRD_IMG_H = 104;
-
     function drawBird() {
         ctx.save();
         ctx.translate(bird.x, bird.y);
         ctx.rotate(bird.rotation * Math.PI / 180);
-
         if (birdImg.complete && birdImg.naturalWidth > 0) {
             ctx.drawImage(birdImg, -BIRD_IMG_W / 2, -BIRD_IMG_H / 2, BIRD_IMG_W, BIRD_IMG_H);
         } else {
-            // Фоллбек — круг
             ctx.fillStyle = '#e8607a';
             ctx.beginPath();
             ctx.arc(0, 0, BIRD_SIZE / 2, 0, Math.PI * 2);
             ctx.fill();
         }
-
         ctx.restore();
     }
 
     function drawPipe(pipe) {
         var radius = 6;
-
-        // Верхняя труба
         ctx.fillStyle = '#7bc67e';
         roundRect(ctx, pipe.x, 0, PIPE_WIDTH, pipe.topH, 0, 0, radius, radius);
         ctx.fill();
-        // Козырёк верхней
         ctx.fillStyle = '#5aad5e';
         roundRect(ctx, pipe.x - 4, pipe.topH - 20, PIPE_WIDTH + 8, 20, radius, radius, radius, radius);
         ctx.fill();
 
-        // Нижняя труба
         var bottomY = pipe.topH + PIPE_GAP;
         ctx.fillStyle = '#7bc67e';
         roundRect(ctx, pipe.x, bottomY, PIPE_WIDTH, H - bottomY, radius, radius, 0, 0);
         ctx.fill();
-        // Козырёк нижней
         ctx.fillStyle = '#5aad5e';
         roundRect(ctx, pipe.x - 4, bottomY, PIPE_WIDTH + 8, 20, radius, radius, radius, radius);
         ctx.fill();
+    }
+
+    function drawBurger() {
+        if (burgerImg.complete && burgerImg.naturalWidth > 0) {
+            ctx.drawImage(burgerImg, burgerX, H - BURGER_H, BURGER_W, BURGER_H);
+        } else {
+            ctx.fillStyle = '#d4a030';
+            ctx.fillRect(burgerX, H - BURGER_H, BURGER_W, BURGER_H);
+        }
     }
 
     function roundRect(ctx, x, y, w, h, tlr, trr, brr, blr) {
@@ -208,7 +238,6 @@ function startFlappyGame(container, { onResult }) {
     }
 
     function draw() {
-        // Фон — градиент неба
         var grad = ctx.createLinearGradient(0, 0, 0, H);
         grad.addColorStop(0, '#87CEEB');
         grad.addColorStop(0.7, '#c8e6f5');
@@ -216,21 +245,25 @@ function startFlappyGame(container, { onResult }) {
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, W, H);
 
-        // Земля
         ctx.fillStyle = '#8B7355';
         ctx.fillRect(0, H - 4, W, 4);
 
-        // Трубы
         for (var i = 0; i < pipes.length; i++) {
             drawPipe(pipes[i]);
         }
 
-        // Птичка
+        // Бургер — рисуем всегда (он далеко за экраном пока не дойдёт)
+        drawBurger();
+
         drawBird();
     }
 
-    function loop() {
-        update();
+    function loop(timestamp) {
+        if (!lastTime) lastTime = timestamp;
+        var elapsed = timestamp - lastTime;
+        lastTime = timestamp;
+        var dt = Math.min(elapsed / TARGET_DT, 3);
+        update(dt);
         draw();
         animId = requestAnimationFrame(loop);
     }
@@ -256,7 +289,6 @@ function startFlappyGame(container, { onResult }) {
         }, 2000);
     }
 
-    // События
     canvas.addEventListener('click', function(e) {
         e.preventDefault();
         jump();
@@ -267,7 +299,6 @@ function startFlappyGame(container, { onResult }) {
         jump();
     }, { passive: false });
 
-    // Запуск
     reset();
     loop();
 }

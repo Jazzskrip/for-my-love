@@ -24,6 +24,61 @@ const userCouponClose = document.getElementById('userCouponClose');
 let pendingCouponOpen = null;
 let rewards = [];
 let totalDays = 0;
+let tryAgainPhrases = null;
+
+async function loadPhrases() {
+    if (tryAgainPhrases) return tryAgainPhrases;
+    const response = await fetch('data/phrases.json', { cache: 'no-store' });
+    if (!response.ok) return { first: 'Попробуй ещё раз!', phrases: [] };
+    tryAgainPhrases = await response.json();
+    return tryAgainPhrases;
+}
+
+function getTryAgainCounts() {
+    try {
+        return JSON.parse(localStorage.getItem('adventTryAgain') || '{}');
+    } catch (e) {
+        return {};
+    }
+}
+
+function setTryAgainCount(day, count) {
+    const counts = getTryAgainCounts();
+    counts[String(day)] = count;
+    localStorage.setItem('adventTryAgain', JSON.stringify(counts));
+}
+
+function getCrackLevel(current, total) {
+    if (total <= 0 || current <= 0) return 0;
+    const ratio = current / total;
+    if (ratio >= 1) return 5;
+    if (ratio >= 0.8) return 4;
+    if (ratio >= 0.6) return 3;
+    if (ratio >= 0.4) return 2;
+    if (ratio >= 0.15) return 1;
+    return 0;
+}
+
+function applyCrackLevel(card, level) {
+    for (let i = 1; i <= 5; i++) {
+        card.classList.toggle('crack-' + i, i <= level);
+    }
+}
+
+function showTryAgainToast(text) {
+    let toast = document.getElementById('tryAgainToast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'tryAgainToast';
+        toast.className = 'try-again-toast';
+        document.body.appendChild(toast);
+    }
+    toast.textContent = text;
+    toast.classList.remove('try-again-toast-visible');
+    void toast.offsetWidth;
+    toast.classList.add('try-again-toast-visible');
+    setTimeout(() => toast.classList.remove('try-again-toast-visible'), 1800);
+}
 
 function setCouponOpen(open) {
     document.body.classList.toggle('coupon-open', open);
@@ -304,6 +359,33 @@ function showGameModal(gameId) {
 }
 
 async function runOpenFlow(card, dayNumber, reward) {
+    // 0. TryAgain (if any)
+    if (reward.tryAgain) {
+        const needed = reward.tryAgain.attempts;
+        const counts = getTryAgainCounts();
+        const current = (counts[String(dayNumber)] || 0) + 1;
+        setTryAgainCount(dayNumber, current);
+
+        const crackLevel = getCrackLevel(current, needed);
+        applyCrackLevel(card, crackLevel);
+
+        if (current < needed) {
+            card.classList.add('card-shake');
+            setTimeout(() => card.classList.remove('card-shake'), 500);
+
+            const data = await loadPhrases();
+            let text;
+            if (current === 1) {
+                text = data.first || 'Попробуй ещё раз!';
+            } else {
+                const pool = data.phrases || [];
+                text = pool[Math.floor(Math.random() * pool.length)] || 'Ещё раз!';
+            }
+            showTryAgainToast(text);
+            return;
+        }
+    }
+
     // 1. Game (if any)
     if (reward.game) {
         const result = await showGameModal(reward.game);
@@ -353,6 +435,7 @@ function renderRewards(items) {
                 ${reward.coupon ? '<span class="coupon-badge">Купон</span>' : ''}
                 <div class="day-number">${dayNumber}</div>
                 <div class="day-label">День</div>
+                <div class="crack-overlay"></div>
             </div>
             <div class="card-back">
                 ${reward.coupon ? '<span class="coupon-badge">Купон</span>' : ''}
@@ -382,8 +465,17 @@ function renderRewards(items) {
             }
         });
 
-        cards.push({ day: dayNumber, card });
+        cards.push({ day: dayNumber, card, reward });
         calendar.appendChild(card);
+    });
+
+    // Restore crack levels from localStorage
+    const counts = getTryAgainCounts();
+    cards.forEach(({ day, card, reward }) => {
+        if (reward.tryAgain && counts[String(day)] && !openedDays.includes(day)) {
+            const level = getCrackLevel(counts[String(day)], reward.tryAgain.attempts);
+            applyCrackLevel(card, level);
+        }
     });
 
     updateLockState();
