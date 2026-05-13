@@ -77,13 +77,30 @@ async function loadInfo() {
     return { title: 'Справка', items: [] };
 }
 
+const START_DATE = '2026-05-29';
+
+function getToday() {
+    const debugDate = localStorage.getItem('adventDebugDate');
+    if (debugDate) {
+        return debugDate;
+    }
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+}
+
+function getMaxAvailableDay() {
+    const start = new Date(START_DATE + 'T00:00:00');
+    const today = new Date(getToday() + 'T00:00:00');
+    const diff = Math.floor((today - start) / (1000 * 60 * 60 * 24));
+    if (diff < 0) return 0;
+    return diff + 1;
+}
+
 let openedDays = [];
 let openedCoupons = [];
-let lastOpened = 0;
-
-function computeLastOpened() {
-    lastOpened = openedDays.length ? Math.max(...openedDays) : 0;
-}
 
 function renderUserCoupons() {
     if (!userCouponList) {
@@ -134,7 +151,6 @@ function loadLocalProgress() {
         const saved = JSON.parse(localStorage.getItem('adventProgress') || '{}');
         openedDays = Array.isArray(saved.openedDays) ? saved.openedDays : [];
         openedCoupons = Array.isArray(saved.openedCoupons) ? saved.openedCoupons : [];
-        computeLastOpened();
     } catch (error) {
         openedDays = [];
         openedCoupons = [];
@@ -156,11 +172,11 @@ function getCardByDay(dayNumber) {
 }
 
 function updateLockState() {
-    const nextAllowed = lastOpened + 1;
+    const maxDay = getMaxAvailableDay();
     cards.forEach(({ day, card }) => {
-        const opened = day <= lastOpened;
-        const available = day === nextAllowed;
-        const locked = day > nextAllowed;
+        const opened = openedDays.includes(day);
+        const available = !opened && day <= maxDay;
+        const locked = day > maxDay;
         card.classList.toggle('locked', locked);
         card.classList.toggle('opened', opened);
         card.classList.toggle('available', available);
@@ -185,9 +201,6 @@ function triggerShine(card) {
 
 function markDayOpened(card, dayNumber, reward) {
     card.classList.add('flipped');
-    if (dayNumber > lastOpened) {
-        lastOpened = dayNumber;
-    }
     if (!openedDays.includes(dayNumber)) {
         openedDays.push(dayNumber);
         openedDays.sort((a, b) => a - b);
@@ -206,10 +219,6 @@ function markDayOpened(card, dayNumber, reward) {
     }
     saveLocalProgress();
     updateLockState();
-    const nextCard = getCardByDay(dayNumber + 1);
-    if (nextCard) {
-        triggerShine(nextCard);
-    }
 }
 
 function showCouponModal(reward, card, dayNumber) {
@@ -222,12 +231,13 @@ function showCouponModal(reward, card, dayNumber) {
 }
 
 function handleCardToggle(card, dayNumber, reward) {
-    if (dayNumber <= lastOpened) {
+    if (openedDays.includes(dayNumber)) {
         card.classList.add('flipped');
         return;
     }
 
-    if (dayNumber !== lastOpened + 1) {
+    const maxDay = getMaxAvailableDay();
+    if (dayNumber > maxDay) {
         return;
     }
 
@@ -701,8 +711,33 @@ const debugSelect = document.getElementById('debugMenuSelect');
 if (debugSelect) {
     function applyDay3Effect(fx) {
         document.body.classList.remove('day3-glitch', 'day3-matrix');
+        document.querySelectorAll('.matrix-rain').forEach(el => el.remove());
         if (fx === 'glitch' || fx === 'matrix') {
             document.body.classList.add('day3-' + fx);
+        }
+        if (fx === 'matrix') {
+            const card3 = document.querySelector('.day-card[data-day="3"]');
+            if (card3) {
+                ['.card-front', '.card-back'].forEach(sel => {
+                    const face = card3.querySelector(sel);
+                    if (!face) return;
+                    const rain = document.createElement('div');
+                    rain.className = 'matrix-rain';
+                    for (let c = 0; c < 5; c++) {
+                        const col = document.createElement('div');
+                        col.className = 'matrix-col';
+                        let digits = '';
+                        for (let i = 0; i < 40; i++) {
+                            digits += Math.floor(Math.random() * 10) + '\n';
+                        }
+                        col.textContent = digits;
+                        col.style.animationDelay = (c * 0.3) + 's';
+                        col.style.animationDuration = (1.5 + Math.random() * 1) + 's';
+                        rain.appendChild(col);
+                    }
+                    face.appendChild(rain);
+                });
+            }
         }
     }
     applyDay3Effect(localStorage.getItem('debugDay3Effect') || 'glitch');
@@ -729,10 +764,30 @@ if (debugSelect) {
             return;
         }
 
+        if (chosen && chosen.startsWith('__date_')) {
+            const dateCmd = chosen.replace('__date_', '');
+            if (dateCmd === 'real') {
+                localStorage.removeItem('adventDebugDate');
+            } else {
+                const dayOffset = Number(dateCmd) - 1;
+                const start = new Date(START_DATE + 'T00:00:00');
+                start.setDate(start.getDate() + dayOffset);
+                const yyyy = start.getFullYear();
+                const mm = String(start.getMonth() + 1).padStart(2, '0');
+                const dd = String(start.getDate()).padStart(2, '0');
+                localStorage.setItem('adventDebugDate', `${yyyy}-${mm}-${dd}`);
+            }
+            debugSelect.value = '';
+            updateLockState();
+            return;
+        }
+
         if (chosen === '__reset') {
             debugSelect.value = '';
             if (confirm('Сбросить весь прогресс? Все открытые дни и купоны будут потеряны.')) {
                 localStorage.removeItem('adventProgress');
+                localStorage.removeItem('adventTryAgain');
+                localStorage.removeItem('adventDebugDate');
                 location.reload();
             }
             return;
