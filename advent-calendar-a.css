@@ -1154,7 +1154,7 @@ body.theme-pickle .user-coupon-head h3 {
     -webkit-text-fill-color: unset;
     background: none;
     color: var(--title-gradient-color, #39ff14);
-    text-shadow: 0 0 20px rgba(57, 255, 20, 0.5), 0 0 40px rgba(57, 255, 20, 0.2);
+    text-shadow: 0 0 15px rgba(57, 255, 20, 0.35);
 }
 
 body.theme-pickle .subtitle {
@@ -1168,7 +1168,7 @@ body.theme-pickle .day-number {
     -webkit-text-fill-color: unset;
     background: none;
     color: var(--day-number-color, #39ff14);
-    text-shadow: 0 0 12px rgba(57, 255, 20, 0.6);
+    text-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
 }
 
 body.theme-pickle .day-label {
@@ -1236,23 +1236,26 @@ body.theme-pickle .card-front {
 }
 
 body.theme-pickle .day-card:hover .card-front {
-    box-shadow: 0 0 20px rgba(57, 255, 20, 0.3), 0 0 40px rgba(57, 255, 20, 0.1), inset 0 0 15px rgba(57, 255, 20, 0.05);
+    border-color: rgba(57, 255, 20, 0.6);
 }
 
-/* Пульсация glow на доступной карточке */
+/* Пульсация на доступной карточке — лёгкая через opacity, без box-shadow */
 body.theme-pickle .day-card.available .card-front {
+    border-color: rgba(57, 255, 20, 0.5);
     animation: pickleGlow 2s ease-in-out infinite;
 }
 
 @keyframes pickleGlow {
-    0%, 100% { box-shadow: 0 0 15px rgba(57, 255, 20, 0.2), 0 0 30px rgba(57, 255, 20, 0.1); }
-    50% { box-shadow: 0 0 25px rgba(57, 255, 20, 0.4), 0 0 50px rgba(57, 255, 20, 0.2), 0 0 80px rgba(57, 255, 20, 0.1); }
+    0%, 100% { opacity: 0.85; }
+    50% { opacity: 1; }
 }
 
-/* Скругление карточек чуть меньше — более "рваный" вид */
+/* Скругление карточек чуть меньше + отключаем тяжёлый backdrop-filter */
 body.theme-pickle .card-front,
 body.theme-pickle .card-back {
     border-radius: 12px;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
 }
 body.theme-pickle .card-front::before {
     border-radius: 12px;
