@@ -41,9 +41,9 @@ function setUserCouponOpen(open) {
 }
 
 async function loadRewards() {
-    const response = await fetch('data/rewards-a.json', { cache: 'no-store' });
+    const response = await fetch('data/rewards.json', { cache: 'no-store' });
     if (!response.ok) {
-        throw new Error('rewards-a.json');
+        throw new Error('rewards.json');
     }
     const data = await response.json();
     if (data && Array.isArray(data.items)) {
@@ -708,6 +708,39 @@ function applyStyle(style, picklePalette) {
     }
 }
 
+/* === Игровая модалка === */
+const gameOverlay = document.getElementById('gameOverlay');
+const gameContent = document.getElementById('gameContent');
+
+function openGameModal(gameId) {
+    if (!gameOverlay || !gameContent) return;
+    gameContent.innerHTML = '';
+    document.body.classList.add('game-open');
+    gameOverlay.setAttribute('aria-hidden', 'false');
+
+    const games = { coin: startCoinGame };
+    const gameFn = games[gameId];
+    if (gameFn) {
+        gameFn(gameContent, {
+            onResult: function() {
+                closeGameModal();
+            }
+        });
+    }
+}
+
+function closeGameModal() {
+    document.body.classList.remove('game-open');
+    if (gameOverlay) gameOverlay.setAttribute('aria-hidden', 'true');
+    if (gameContent) gameContent.innerHTML = '';
+}
+
+if (gameOverlay) {
+    gameOverlay.addEventListener('click', function(e) {
+        if (e.target === gameOverlay) closeGameModal();
+    });
+}
+
 /* Эффект матрицы для дня 3 */
 function applyDay3MatrixEffect() {
     document.querySelectorAll('.matrix-rain').forEach(el => el.remove());
@@ -750,6 +783,13 @@ if (debugSelect) {
 
     debugSelect.addEventListener('change', () => {
         const chosen = debugSelect.value;
+
+        // Игры
+        if (chosen === '__game_coin') {
+            debugSelect.value = '';
+            openGameModal('coin');
+            return;
+        }
 
         if (chosen && chosen.startsWith('__date_')) {
             const dateCmd = chosen.replace('__date_', '');
